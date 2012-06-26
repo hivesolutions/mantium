@@ -48,15 +48,15 @@ def index():
         name = "joamag@gmail.com"
     )
 
-@app.route("/login", methods = ["GET"])
+@app.route("/login", methods = ("GET",))
 def login():
     return flask.render_template(
         "login.html.tpl"
     )
 
-@app.route("/login", methods = ["POST"])
+@app.route("/login", methods = ("POST",))
 def do_login():
-    pass
+    return flask.request.form["username"]
 
 @app.route("/run")
 def run():
