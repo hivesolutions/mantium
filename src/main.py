@@ -43,7 +43,27 @@ app = flask.Flask(__name__)
 
 @app.route("/")
 def index():
-    return flask.render_template("index.html.tpl", name = "joamag@gmail.com")
+    return flask.render_template(
+        "index.html.tpl",
+        name = "joamag@gmail.com"
+    )
+
+@app.route("/login", methods = ["GET"])
+def login():
+    return flask.render_template(
+        "login.html.tpl"
+    )
+
+@app.route("/login", methods = ["POST"])
+def do_login():
+    pass
+
+@app.route("/run")
+def run():
+    return flask.render_template(
+        "index.html.tpl",
+        name = "joamag@gmail.com"
+    )
 
 if __name__ == "__main__":
     app.debug = True
