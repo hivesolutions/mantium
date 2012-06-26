@@ -53,7 +53,7 @@ setuptools.setup(
     version = "0.1.0",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
-    description = "Automium System",
+    description = "Automium System Web Interface",
     license = "GNU General Public License (GPL), Version 3",
     keywords = "automium build automation",
     url = "http://automium.com",
@@ -66,6 +66,10 @@ setuptools.setup(
     package_dir = {
         "" : os.path.normpath("src")
     },
+    install_requires = [
+        "automium",
+        "flask"
+    ],
     classifiers = [
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
@@ -74,9 +78,5 @@ setuptools.setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7"
-    ],
-    requires = [
-        "automium",
-        "flask"
     ]
 )
