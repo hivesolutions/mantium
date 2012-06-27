@@ -13,7 +13,7 @@
             <label>Description</label>
         </div>
         <div class="input">
-            <textarea name="description" placeholder="words about the project"></textarea>
+            <textarea name="description" placeholder="eg: some words about the project"></textarea>
         </div>
         <div class="label">
             <label>Build File</label>
