@@ -129,11 +129,11 @@ textarea:focus {
 }
 
 textarea::-webkit-input-placeholder {
-    color: #999999;
+    color: #aaaaaa;
 }
 
 textarea:-moz-placeholder {
-    color: #999999;
+    color: #aaaaaa;
 }
 
 label {
