@@ -1,3 +1,2 @@
-{% extends "layout.html.tpl" %}{% block title %}Home{% endblock %}{% block content %}
-    {% if name %}        <h1>Hello {{ name }}!</h1>        <div class="button button-green" data-link="http://www.sapo.pt">Hello World</div>    {% else %}        <h1>Hello World!</h1>    {% endif %}
+{% extends "partials/layout.html.tpl" %}{% block title %}Home{% endblock %}{% block name %}Automium{% endblock %}{% block content %}    <div class="quote">        Automium is a new simplified version of the build automation process for people that like automation.        This beast is written <strong>only in python</strong>.    </div>
 {% endblock %}

@@ -37,15 +37,25 @@ __copyright__ = "Copyright (c) 2008 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import os
+import uuid
+import json
 import flask
 
+CURRENT_DIRECTORY = os.path.dirname(__file__)
+UPLOAD_FOLDER = os.path.join(CURRENT_DIRECTORY, "uploads")
+PROJECTS_FOLDER = os.path.join(CURRENT_DIRECTORY, "projects")
+ALLOWED_EXTENSIONS = set(["txt", "pdf", "png", "jpg", "jpeg", "gif"])
+
 app = flask.Flask(__name__)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = 1024 * 10240000
 
 @app.route("/")
+@app.route("/index")
 def index():
     return flask.render_template(
-        "index.html.tpl",
-        name = "joamag@gmail.com"
+        "index.html.tpl"
     )
 
 @app.route("/login", methods = ("GET",))
@@ -58,6 +68,60 @@ def login():
 def do_login():
     return flask.request.form["username"]
 
+@app.route("/projects", methods = ("GET",))
+def projects():
+    # retrieves the various entries from the projects
+    # folder as the various projects (identifiers)
+    projects = os.listdir(PROJECTS_FOLDER)
+    return flask.render_template(
+        "project_list.html.tpl",
+        projects = projects
+    )
+
+@app.route("/projects/new", methods = ("GET",))
+def new_projects():
+    return flask.render_template(
+        "project_new.html.tpl"
+    )
+
+@app.route("/projects", methods = ("POST",))
+def create_projects():
+    # retrieves all the parameters from the request to be
+    # handled then validated the required ones
+    name = flask.request.form.get("name", None)
+    description = flask.request.form.get("description", None)
+    build_file = flask.request.files.get("build_file", None)
+
+    # TODO: TENHO DE POR AKI O VALIDADOR !!!!
+
+    # generates the unique identifier to be used to identify
+    # the project reference and then uses it to create the
+    # map describing the current project
+    id = str(uuid.uuid4())
+    project = {
+        "id" : id,
+        "name" : name,
+        "description" : description
+    }
+
+    # creates the path to the project folder and creates it
+    # in case its required then creates the path to the description
+    # file of the project and dumps the json describing the project
+    # into such file for latter reference
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    if not os.path.isdir(project_folder): os.makedirs(project_folder)
+    project_path = os.path.join(project_folder, "description.json")
+    project_file = open(project_path, "wb")
+    try: json.dump(project, project_file)
+    finally: project_file.close()
+
+    # saves the build file in the appropriate location
+    # folder for latter usage
+    file_path = os.path.join(project_folder, "build.json")
+    build_file.save(file_path)
+
+    return flask.redirect(flask.url_for("index"))
+
 @app.route("/run")
 def run():
     return flask.render_template(
@@ -65,6 +129,19 @@ def run():
         name = "joamag@gmail.com"
     )
 
+@app.route("/status")
+def status():
+    return ""
+
+@app.errorhandler(404)
+def special_exception_handler(error):
+    return str(error)
+
+@app.errorhandler(413)
+def special_exceptdion_handler(error):
+    return str(error)
+
 if __name__ == "__main__":
     app.debug = True
+    #app.run(use_debugger = True, debug = True, use_reloader = False, host = "0.0.0.0")
     app.run()

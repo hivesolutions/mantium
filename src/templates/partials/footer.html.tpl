@@ -1,5 +1,5 @@
 <div id="footer">
     {% block footer %}
-        &copy; Copyright 2010 by <a class="link link-blue" href="http://www.sapo.pt">you</a>.
+        &copy; Copyright 2012 by <a href="http://hive.pt">Hive Solutions</a>.
     {% endblock %}
 </div>
