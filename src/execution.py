@@ -47,6 +47,12 @@ this amount should be small enough to provide some
 resolution level to the schedule execution """
 
 class ExecutionThread(threading.Thread):
+    """
+    The thread to be used in the execution of "random"
+    "callables" for a provided time, this thread contains
+    a series of thread safe method for operating over
+    the work tuples.
+    """
 
     run_flag = True
     """ The flag that controls the running operations
@@ -76,6 +82,8 @@ class ExecutionThread(threading.Thread):
         # iterates continuously (executing work)
         # while the run flag is set
         while self.run_flag:
+            # acquires the lock to access the list
+            # of work and execute it
             self.work_lock.acquire()
 
             # retrieves the current time, this variable
