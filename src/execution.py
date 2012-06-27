@@ -82,6 +82,11 @@ class ExecutionThread(threading.Thread):
         # iterates continuously (executing work)
         # while the run flag is set
         while self.run_flag:
+            # creates a list list that will wold the
+            # work tuples to be executed (this way the
+            # lock problem is avoided)
+            execution_list = []
+
             # acquires the lock to access the list
             # of work and execute it
             self.work_lock.acquire()
@@ -103,12 +108,16 @@ class ExecutionThread(threading.Thread):
                     # be used and executes it in case the
                     # time has passed
                     _time, callable = self.work_list[0]
-                    if _time < current_time: callable(); heapq.heappop(self.work_list)
+                    if _time < current_time: execution_list.append(callable); heapq.heappop(self.work_list)
                     else: break
             finally:
                 # releases the work lock providing access
                 # to the work list
                 self.work_lock.release()
+
+            # iterates over all the "callables" in the execution
+            # list to execute their operations
+            for callable in execution_list: callable()
 
             # sleeps for a while so that the process may
             # released for different tasks

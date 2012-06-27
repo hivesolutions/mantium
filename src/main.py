@@ -40,8 +40,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import os
 import uuid
 import json
+import time
 import flask
 import shutil
+import zipfile
+import automium
+import datetime
 
 import execution
 
@@ -77,8 +81,8 @@ def do_login():
 @app.route("/projects", methods = ("GET",))
 def projects():
     # retrieves the various entries from the projects
-    # folder as the various projects (identifiers)
-    projects = os.listdir(PROJECTS_FOLDER)
+    # folder as the various projects
+    projects = _get_projects()
     return flask.render_template(
         "project_list.html.tpl",
         projects = projects
@@ -123,8 +127,17 @@ def create_project():
 
     # saves the build file in the appropriate location
     # folder for latter usage
-    file_path = os.path.join(project_folder, "build.json")
+    file_path = os.path.join(project_folder, "build.atm")
     build_file.save(file_path)
+
+    # touches the automium file so that its contents are
+    # correctly deployed into the build directory
+    _touch_atm(id)
+
+    # ensures that the builds folder exists in order to avoid
+    # any possible listing problem
+    builds_folder = os.path.join(project_folder, "builds")
+    os.makedirs(builds_folder)
 
     return flask.redirect(
         flask.url_for("show_project", id = id)
@@ -132,11 +145,7 @@ def create_project():
 
 @app.route("/projects/<id>", methods = ("GET",))
 def show_project(id):
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    project_path = os.path.join(project_folder, "description.json")
-    project_file = open(project_path, "rb")
-    try: project = json.load(project_file)
-    finally: project_file.close()
+    project = _get_project(id)
     return flask.render_template(
         "project_show.html.tpl",
         project = project
@@ -181,11 +190,17 @@ def update_project(id):
     try: json.dump(project, project_file)
     finally: project_file.close()
 
-    # saves the build file in the appropriate location
-    # folder for latter usage
+    # in case the build file was provided must handle it correctly
+    # should be processed
     if build_file:
-        file_path = os.path.join(project_folder, "build.json")
+        # saves the build file in the appropriate location
+        # folder for latter usage
+        file_path = os.path.join(project_folder, "build.atm")
         build_file.save(file_path)
+
+        # touches the automium file so that its contents are
+        # correctly deployed into the build directory
+        _touch_atm(id);
 
     return flask.redirect(
         flask.url_for("show_project", id = id)
@@ -201,14 +216,54 @@ def delete_project(id):
 
 @app.route("/projects/<id>/run")
 def run_project(id):
-    def tobias():
-        print "OLA MUNDO"
+    def _run():
+        project_folder = os.path.join(PROJECTS_FOLDER, id)
+        build_path = os.path.join(project_folder, "_build")
+        _build_path = os.path.join(build_path, "build.json")
 
-    import time
-    execution_thread.insert_work(time.time() + 5.0, tobias)
+        build_file = open(_build_path, "rb")
+        try: configuration = json.load(build_file)
+        finally: build_file.close()
+
+        current = os.getcwd()
+        os.chdir(project_folder)
+        try: automium.run(build_path, configuration)
+        finally: os.chdir(current)
+
+    execution_thread.insert_work(time.time(), _run)
 
     return flask.redirect(
         flask.url_for("show_project", id = id)
+    )
+
+@app.route("/projects/<id>/builds")
+def builds(id):
+    project = _get_project(id)
+    builds = _get_builds(id)
+    return flask.render_template(
+        "build_list.html.tpl",
+        project = project,
+        builds = builds
+    )
+
+@app.route("/projects/<id>/builds/<build_id>", methods = ("GET",))
+def show_build(id, build_id):
+    project = _get_project(id)
+    build = _get_build(id, build_id)
+    return flask.render_template(
+        "build_show.html.tpl",
+        project = project,
+        build = build
+    )
+
+@app.route("/projects/<id>/builds/<build_id>/delete", methods = ("GET", "POST"))
+def delete_build(id, build_id):
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    builds_folder = os.path.join(project_folder, "builds")
+    build_folder = os.path.join(builds_folder, build_id)
+    if os.path.isdir(build_folder): shutil.rmtree(build_folder)
+    return flask.redirect(
+        flask.url_for("builds", id = id)
     )
 
 @app.route("/status")
@@ -222,6 +277,60 @@ def handler_404(error):
 @app.errorhandler(413)
 def handler_413(error):
     return str(error)
+
+def _get_projects():
+    projects = []
+    ids = os.listdir(PROJECTS_FOLDER)
+    for id in ids:
+        project = _get_project(id)
+        projects.append(project)
+    return projects
+
+def _get_builds(id):
+    builds = []
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    builds_folder = os.path.join(project_folder, "builds")
+    build_ids = os.listdir(builds_folder)
+    for build_id in build_ids:
+        build = _get_build(id, build_id)
+        builds.append(build)
+    return builds
+
+def _get_project(id):
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    project_path = os.path.join(project_folder, "description.json")
+    project_file = open(project_path, "rb")
+    try: project = json.load(project_file)
+    finally: project_file.close()
+    return project
+
+def _get_build(id, build_id):
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    builds_folder = os.path.join(project_folder, "builds")
+    build_folder = os.path.join(builds_folder, build_id)
+    build_path = os.path.join(build_folder, "description.json")
+    build_file = open(build_path, "rb")
+    try: build = json.load(build_file)
+    finally: build_file.close()
+
+    result = build["result"]
+    start_time = datetime.datetime.fromtimestamp(build["start_time"])
+    end_time = datetime.datetime.fromtimestamp(build["end_time"])
+    build["_result"] = result and "passed" or "failed"
+    build["_start_time"] = start_time.strftime("%b %d, %Y %H:%M:%S")
+    build["_end_time"] = end_time.strftime("%b %d, %Y %H:%M:%S")
+
+    return build
+
+def _touch_atm(id):
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    file_path = os.path.join(project_folder, "build.atm")
+    build_path = os.path.join(project_folder, "_build")
+    if os.path.isdir(build_path): shutil.rmtree(build_path)
+    os.makedirs(build_path)
+
+    zip_file = zipfile.ZipFile(file_path, "r")
+    zip_file.extractall(build_path)
 
 if __name__ == "__main__":
     app.debug = True

@@ -4,11 +4,11 @@
 {% block header %}
     {{ super() }}
     <div class="links sub-links">
-        <a href="{{ url_for('new_project') }}">builds</a>
+        <a href="{{ url_for('builds', id = project.id) }}">builds</a>
         //
         <a href="{{ url_for('edit_project', id = project.id) }}">edit</a>
         //
-        <a href="{{ url_for('delete_project', id  = project.id) }}">delete</a>
+        <a href="{{ url_for('delete_project', id = project.id) }}">delete</a>
         //
         <a href="{{ url_for('run_project', id  = project.id) }}">run</a>
     </div>
