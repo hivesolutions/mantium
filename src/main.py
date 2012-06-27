@@ -266,6 +266,32 @@ def delete_build(id, build_id):
         flask.url_for("builds", id = id)
     )
 
+@app.route("/projects/<id>/builds/<build_id>/log", methods = ("GET",))
+def log_build(id, build_id):
+    project = _get_project(id)
+    build = _get_build(id, build_id)
+    log = _get_build_log(id, build_id)
+    return flask.render_template(
+        "build_log.html.tpl",
+        project = project,
+        build = build,
+        log = log
+    )
+
+@app.route("/projects/<id>/builds/<build_id>/files/", defaults = {"path" : "" }, methods = ("GET",))
+@app.route("/projects/<id>/builds/<build_id>/files/<path:path>", methods = ("GET",))
+def files_build(id, build_id, path = ""):
+    project = _get_project(id)
+    build = _get_build(id, build_id)
+    files = _get_build_files(id, build_id, path)
+    return flask.render_template(
+        "build_files.html.tpl",
+        project = project,
+        build = build,
+        path = path,
+        files = files
+    )
+
 @app.route("/status")
 def status():
     return "this is a status page"
@@ -325,6 +351,27 @@ def _get_build(id, build_id):
     build["_end_time"] = end_time.strftime("%b %d, %Y %H:%M:%S")
 
     return build
+
+def _get_build_log(id, build_id):
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    builds_folder = os.path.join(project_folder, "builds")
+    build_folder = os.path.join(builds_folder, build_id)
+    log_path = os.path.join(build_folder, "log/automium.log")
+    log_file = open(log_path, "rb")
+    try: log = log_file.read()
+    finally: log_file.close()
+
+    return log
+
+def _get_build_files(id, build_id, path = ""):
+    path = path.strip("/")
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    builds_folder = os.path.join(project_folder, "builds")
+    build_folder = os.path.join(builds_folder, build_id)
+    full_path = os.path.join(build_folder, path)
+    entries = os.listdir(full_path)
+    path and entries.insert(0, "..")
+    return entries
 
 def _touch_atm(id):
     project_folder = os.path.join(PROJECTS_FOLDER, id)

@@ -137,7 +137,7 @@ textarea:-moz-placeholder {
 }
 
 label {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
 }
 
@@ -163,6 +163,15 @@ ul li .name {
 
 ul li .description {
     font-size: 18px;
+}
+
+pre {
+    background-color: #f6f6f6;
+    font-size: 12px;
+    line-height: 18px;
+    margin: 20px 0px 20px 0px;
+    padding: 12px 12px 12px 12px;
+    text-align: left;
 }
 
 .label {
