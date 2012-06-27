@@ -54,6 +54,29 @@ form {
     width: 540px;
 }
 
+table {
+    margin: 20px 0px 32px 0px;
+    width: 620px;
+}
+
+table td {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 8px 20px 8px 20px;
+}
+
+table td.label {
+    color: #888888;
+}
+
+table td.left {
+    text-align: left;
+}
+
+table td.right {
+    text-align: right;
+}
+
 input {
     background-color: #fcfcfc;
     border: 1px solid #dddddd;
@@ -120,6 +143,7 @@ label {
 .button {
     font-size: 22px;
     font-weight: bold;
+    margin: 0px 4px 0px 4px;
 }
 
 .button:hover {
@@ -142,8 +166,14 @@ label {
     font-size: 18px;
 }
 
+.links.sub-links {
+    font-size: 16px;
+    margin-top: 6px;
+}
+
 .quote {
     font-size: 18px;
+    line-height: 24px;
     margin: 20px 0px 20px 0px;
 }
 
@@ -153,4 +183,12 @@ label {
 
 .offline {
 
+}
+
+
+.separator-horizontal {
+    background: transparent url(../images/separator-horizontal.png) no-repeat center center;
+    height: 10px;
+    margin: 30px auto 6px auto;
+    width: 260px;
 }

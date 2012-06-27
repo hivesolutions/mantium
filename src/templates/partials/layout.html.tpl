@@ -15,7 +15,7 @@
                 //
                 <a href="{{ url_for('projects') }}">projects</a>
                 //
-                <a href="{{ url_for('projects') }}/new">new project</a>
+                <a href="{{ url_for('new_project') }}">new project</a>
                 //
                 <a href="{{ url_for('status') }}">status</a>
             </div>

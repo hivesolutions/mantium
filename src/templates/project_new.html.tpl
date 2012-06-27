@@ -6,7 +6,8 @@
         In order to start automating the build we need some information on your little project
         this information include the mythical <a href="docs/build.json">build.json</a> file.
     </div>
-    <form action="{{ url_for('projects') }}" enctype="multipart/form-data" method="post" class="form">
+    <div class="separator-horizontal"></div>
+    <form action="{{ url_for('create_project') }}" enctype="multipart/form-data" method="post" class="form">
         <div class="label">
             <label>Project Name</label>
         </div>
@@ -14,7 +15,7 @@
             <input name="name" placeholder="eg: colony" />
         </div>
         <div class="label">
-            <label>Project Description</label>
+            <label>Description</label>
         </div>
         <div class="input">
             <textarea name="description" placeholder="words about the project"></textarea>

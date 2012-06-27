@@ -41,6 +41,9 @@ import os
 import uuid
 import json
 import flask
+import shutil
+
+import execution
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
 UPLOAD_FOLDER = os.path.join(CURRENT_DIRECTORY, "uploads")
@@ -49,7 +52,10 @@ ALLOWED_EXTENSIONS = set(["txt", "pdf", "png", "jpg", "jpeg", "gif"])
 
 app = flask.Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MAX_CONTENT_LENGTH"] = 1024 * 10240000
+app.config["MAX_CONTENT_LENGTH"] = 1024 ** 3
+
+execution_thread = execution.ExecutionThread()
+execution_thread.start()
 
 @app.route("/")
 @app.route("/index")
@@ -79,13 +85,13 @@ def projects():
     )
 
 @app.route("/projects/new", methods = ("GET",))
-def new_projects():
+def new_project():
     return flask.render_template(
         "project_new.html.tpl"
     )
 
 @app.route("/projects", methods = ("POST",))
-def create_projects():
+def create_project():
     # retrieves all the parameters from the request to be
     # handled then validated the required ones
     name = flask.request.form.get("name", None)
@@ -120,28 +126,104 @@ def create_projects():
     file_path = os.path.join(project_folder, "build.json")
     build_file.save(file_path)
 
-    return flask.redirect(flask.url_for("index"))
+    return flask.redirect(
+        flask.url_for("show_project", id = id)
+    )
 
-@app.route("/run")
-def run():
+@app.route("/projects/<id>", methods = ("GET",))
+def show_project(id):
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    project_path = os.path.join(project_folder, "description.json")
+    project_file = open(project_path, "rb")
+    try: project = json.load(project_file)
+    finally: project_file.close()
     return flask.render_template(
-        "index.html.tpl",
-        name = "joamag@gmail.com"
+        "project_show.html.tpl",
+        project = project
+    )
+
+@app.route("/projects/<id>/edit", methods = ("GET",))
+def edit_project(id):
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    project_path = os.path.join(project_folder, "description.json")
+    project_file = open(project_path, "rb")
+    try: project = json.load(project_file)
+    finally: project_file.close()
+    return flask.render_template(
+        "project_edit.html.tpl",
+        project = project
+    )
+
+@app.route("/projects/<id>/edit", methods = ("POST",))
+def update_project(id):
+    # retrieves all the parameters from the request to be
+    # handled then validated the required ones
+    name = flask.request.form.get("name", None)
+    description = flask.request.form.get("description", None)
+    build_file = flask.request.files.get("build_file", None)
+
+    # TODO: TENHO DE POR AKI O VALIDADOR !!!!
+
+    project = {
+        "id" : id,
+        "name" : name,
+        "description" : description
+    }
+
+    # creates the path to the project folder and creates it
+    # in case its required then creates the path to the description
+    # file of the project and dumps the json describing the project
+    # into such file for latter reference
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    if not os.path.isdir(project_folder): os.makedirs(project_folder)
+    project_path = os.path.join(project_folder, "description.json")
+    project_file = open(project_path, "wb")
+    try: json.dump(project, project_file)
+    finally: project_file.close()
+
+    # saves the build file in the appropriate location
+    # folder for latter usage
+    if build_file:
+        file_path = os.path.join(project_folder, "build.json")
+        build_file.save(file_path)
+
+    return flask.redirect(
+        flask.url_for("show_project", id = id)
+    )
+
+@app.route("/projects/<id>/delete", methods = ("GET", "POST"))
+def delete_project(id):
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    if os.path.isdir(project_folder): shutil.rmtree(project_folder)
+    return flask.redirect(
+        flask.url_for("projects")
+    )
+
+@app.route("/projects/<id>/run")
+def run_project(id):
+    def tobias():
+        print "OLA MUNDO"
+
+    import time
+    execution_thread.insert_work(time.time() + 5.0, tobias)
+
+    return flask.redirect(
+        flask.url_for("show_project", id = id)
     )
 
 @app.route("/status")
 def status():
-    return ""
+    return "this is a status page"
 
 @app.errorhandler(404)
-def special_exception_handler(error):
+def handler_404(error):
     return str(error)
 
 @app.errorhandler(413)
-def special_exceptdion_handler(error):
+def handler_413(error):
     return str(error)
 
 if __name__ == "__main__":
     app.debug = True
-    #app.run(use_debugger = True, debug = True, use_reloader = False, host = "0.0.0.0")
-    app.run()
+    app.run(use_debugger = True, debug = True, use_reloader = False, host = "0.0.0.0")
+    #app.run()
