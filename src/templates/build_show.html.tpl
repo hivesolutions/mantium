@@ -31,8 +31,8 @@
                 <td class="left value" width="50%">{{ build.delta }} seconds</td>
             </tr>
             <tr>
-                <td class="right label" width="50%">build size</td>
-                <td class="left value" width="50%">{{ build.size|filesizeformat }}</td>
+                <td class="right label" width="50%">size</td>
+                <td class="left value" width="50%">{{ build.size_string }}</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">system</td>
