@@ -29,6 +29,17 @@
  __license__   = GNU General Public License (GPL), Version 3
 */
 
+#header {
+}
+
+#content {
+}
+
+#footer {
+    line-height: 22px;
+    margin: 20px 0px 0px 0px;
+}
+
 body {
     color: #666666;
     font-family: "Garamond", "Georgia", "serif";
@@ -130,6 +141,30 @@ label {
     font-weight: bold;
 }
 
+ul {
+    margin: 20px 0px 20px 0px;
+}
+
+ul li {
+    cursor: pointer;
+    list-style: none;
+    margin: 12px 0px 12px 0px;
+    padding: 12px 0px 12px 0px;
+}
+
+ul li:hover {
+    background-color: #f6f6f6;
+}
+
+ul li .name {
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+ul li .description {
+    font-size: 18px;
+}
+
 .label {
     text-align: center;
 }
@@ -149,18 +184,6 @@ label {
 .button:hover {
     border-bottom: 1px solid #666666;
     padding-bottom: 2px;
-}
-
-#header {
-
-}
-
-#content {
-}
-
-#footer {
-    margin: 20px 0px 0px 0px;
-    line-height: 22px;
 }
 
 .links {
@@ -193,29 +216,4 @@ label {
     height: 10px;
     margin: 30px auto 6px auto;
     width: 260px;
-}
-
-
-ul {
-    margin: 20px 0px 20px 0px;
-}
-
-li {
-    cursor: pointer;
-    list-style: none;
-    margin: 12px 0px 12px 0px;
-    padding: 12px 0px 12px 0px;
-}
-
-li:hover {
-    background-color: #f6f6f6;
-}
-
-li .name {
-    font-size: 20px;
-    margin-bottom: 6px;
-}
-
-li .description {
-    font-size: 18px;
 }

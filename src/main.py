@@ -282,6 +282,8 @@ def _get_projects():
     projects = []
     ids = os.listdir(PROJECTS_FOLDER)
     for id in ids:
+        path = os.path.join(PROJECTS_FOLDER, id)
+        if not os.path.isdir(path): continue
         project = _get_project(id)
         projects.append(project)
     return projects
@@ -292,6 +294,8 @@ def _get_builds(id):
     builds_folder = os.path.join(project_folder, "builds")
     build_ids = os.listdir(builds_folder)
     for build_id in build_ids:
+        path = os.path.join(builds_folder, build_id)
+        if not os.path.isdir(path): continue
         build = _get_build(id, build_id)
         builds.append(build)
     return builds
