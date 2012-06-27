@@ -2,11 +2,6 @@
 {% block title %}Projects{% endblock %}
 {% block name %}New Project{% endblock %}
 {% block content %}
-    <div class="quote">
-        In order to start automating the build we need some information on your little project
-        this information include the mythical <a href="docs/build.json">build.json</a> file.
-    </div>
-    <div class="separator-horizontal"></div>
     <form action="{{ url_for('create_project') }}" enctype="multipart/form-data" method="post" class="form">
         <div class="label">
             <label>Project Name</label>
