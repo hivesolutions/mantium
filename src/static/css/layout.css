@@ -238,3 +238,20 @@ pre {
     margin: 12px auto 12px auto;
     width: 260px;
 }
+
+
+
+
+
+.recursion-set {
+    font-size: 20px;
+    margin: 20px 0px 32px 0px;
+    text-align: center;
+}
+
+
+.recursion {
+    margin: 0px 12px 0px 12px;
+    text-align: center;
+    width: 24px;
+}

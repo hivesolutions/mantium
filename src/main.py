@@ -104,6 +104,10 @@ def create_project():
     name = flask.request.form.get("name", None)
     description = flask.request.form.get("description", None)
     build_file = flask.request.files.get("build_file", None)
+    days = int(flask.request.form.get("days", 0))
+    hours = int(flask.request.form.get("hours", 0))
+    minutes = int(flask.request.form.get("minutes", 0))
+    seconds = int(flask.request.form.get("seconds", 0))
 
     # TODO: TENHO DE POR AKI O VALIDADOR !!!!
 
@@ -114,7 +118,13 @@ def create_project():
     project = {
         "id" : id,
         "name" : name,
-        "description" : description
+        "description" : description,
+        "recursion" : {
+            "days" : days,
+            "hours" : hours,
+            "minutes" : minutes,
+            "seconds" : seconds
+        }
     }
 
     # creates the path to the project folder and creates it
@@ -177,13 +187,23 @@ def update_project(id):
     name = flask.request.form.get("name", None)
     description = flask.request.form.get("description", None)
     build_file = flask.request.files.get("build_file", None)
+    days = int(flask.request.form.get("days", 0))
+    hours = int(flask.request.form.get("hours", 0))
+    minutes = int(flask.request.form.get("minutes", 0))
+    seconds = int(flask.request.form.get("seconds", 0))
 
     # TODO: TENHO DE POR AKI O VALIDADOR !!!!
 
     project = {
         "id" : id,
         "name" : name,
-        "description" : description
+        "description" : description,
+        "recursion" : {
+            "days" : days,
+            "hours" : hours,
+            "minutes" : minutes,
+            "seconds" : seconds
+        }
     }
 
     # creates the path to the project folder and creates it
@@ -237,8 +257,17 @@ def run_project(id):
         try: automium.run(build_path, configuration)
         finally: os.chdir(current)
 
+        next_time = time.time() + 100
+        _next_time = datetime.datetime.fromtimestamp(next_time)
+
+        build = _get_latest_build(id)
         project = _get_project(id)
+        project["result"] = build["result"]
+        project["_result"] = build["_result"]
+        project["build_time"] = build.get("delta", 0)
         project["builds"] = project.get("builds", 0) + 1
+        project["next_time"] = next_time
+        project["_next_time"] = _next_time.strftime("%b %d, %Y %H:%M:%S")
         _set_project(id, project)
 
     # inserts a new work task into the execution thread
@@ -391,6 +420,15 @@ def _get_build(id, build_id):
     build["_end_time"] = end_time.strftime("%b %d, %Y %H:%M:%S")
 
     return build
+
+def _get_latest_build(id):
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    builds_folder = os.path.join(project_folder, "builds")
+    build_ids = os.listdir(builds_folder)
+    if not build_ids: return None
+    build_ids.sort(reverse = True)
+    build_id = build_ids[0]
+    return _get_build(id, build_id)
 
 def _get_build_log(id, build_id):
     project_folder = os.path.join(PROJECTS_FOLDER, id)

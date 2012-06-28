@@ -16,6 +16,15 @@
             <textarea name="description" placeholder="eg: some words about the project"></textarea>
         </div>
         <div class="label">
+            <label>Recursion</label>
+        </div>
+        <div class="recursion-set">
+            <input class="recursion" name="days" placeholder="-" /> days
+            <input class="recursion" name="hours" placeholder="-" /> hours
+            <input class="recursion" name="minutes" placeholder="-" /> minutes
+            <input class="recursion" name="seconds" placeholder="-" /> seconds
+        </div>
+        <div class="label">
             <label>Build File</label>
         </div>
         <div class="input">
