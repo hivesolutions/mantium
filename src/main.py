@@ -560,6 +560,12 @@ execution_thread.start()
 _schedule_projects()
 
 if __name__ == "__main__":
+    # sets the debug control in the application
+    # and then start running it (continuous loop)
     app.debug = True
     app.run(use_debugger = True, debug = True, use_reloader = False, host = "0.0.0.0")
     #app.run()
+
+    # stop the execution thread so that it's possible to
+    # the process to return the calling
+    execution_thread.stop()

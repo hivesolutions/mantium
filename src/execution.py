@@ -123,6 +123,9 @@ class ExecutionThread(threading.Thread):
             # released for different tasks
             time.sleep(SLEEP_TIME)
 
+    def stop(self):
+        self.run_flag = False
+
     def insert_work(self, target_time, callable):
         work = (target_time, callable)
         self.work_lock.acquire()
