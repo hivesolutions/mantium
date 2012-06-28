@@ -102,10 +102,10 @@ def create_project():
     name = flask.request.form.get("name", None)
     description = flask.request.form.get("description", None)
     build_file = flask.request.files.get("build_file", None)
-    days = int(flask.request.form.get("days", 0))
-    hours = int(flask.request.form.get("hours", 0))
-    minutes = int(flask.request.form.get("minutes", 0))
-    seconds = int(flask.request.form.get("seconds", 0))
+    days = int(flask.request.form.get("days", 0) or 0)
+    hours = int(flask.request.form.get("hours", 0) or 0)
+    minutes = int(flask.request.form.get("minutes", 0) or 0)
+    seconds = int(flask.request.form.get("seconds", 0) or 0)
 
     # TODO: TENHO DE POR AKI O VALIDADOR !!!!
 
@@ -191,10 +191,10 @@ def update_project(id):
     name = flask.request.form.get("name", None)
     description = flask.request.form.get("description", None)
     build_file = flask.request.files.get("build_file", None)
-    days = int(flask.request.form.get("days", 0))
-    hours = int(flask.request.form.get("hours", 0))
-    minutes = int(flask.request.form.get("minutes", 0))
-    seconds = int(flask.request.form.get("seconds", 0))
+    days = int(flask.request.form.get("days", 0) or 0)
+    hours = int(flask.request.form.get("hours", 0) or 0)
+    minutes = int(flask.request.form.get("minutes", 0) or 0)
+    seconds = int(flask.request.form.get("seconds", 0) or 0)
 
     # TODO: TENHO DE POR AKI O VALIDADOR !!!!
 
@@ -549,6 +549,17 @@ def _schedule_projects():
     projects = _get_projects()
     for project in projects: _schedule_project(project)
 
+def run():
+    # sets the debug control in the application
+    # and then start running it (continuous loop)
+    app.debug = True
+    app.run(use_debugger = True, debug = True, use_reloader = False, host = "0.0.0.0")
+    #app.run()
+
+    # stop the execution thread so that it's possible to
+    # the process to return the calling
+    execution_thread.stop()
+
 # creates the thread that it's going to be used to
 # execute the various background tasks and starts
 # it, providing the mechanism for execution
@@ -560,12 +571,4 @@ execution_thread.start()
 _schedule_projects()
 
 if __name__ == "__main__":
-    # sets the debug control in the application
-    # and then start running it (continuous loop)
-    app.debug = True
-    app.run(use_debugger = True, debug = True, use_reloader = False, host = "0.0.0.0")
-    #app.run()
-
-    # stop the execution thread so that it's possible to
-    # the process to return the calling
-    execution_thread.stop()
+    run()
