@@ -50,8 +50,9 @@ import datetime
 import execution
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
-UPLOAD_FOLDER = os.path.join(CURRENT_DIRECTORY, "uploads")
-PROJECTS_FOLDER = os.path.join(CURRENT_DIRECTORY, "projects")
+CURRENT_DIRECTORY_ABS = os.path.abspath(CURRENT_DIRECTORY)
+UPLOAD_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "uploads")
+PROJECTS_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "projects")
 ALLOWED_EXTENSIONS = set(["txt", "pdf", "png", "jpg", "jpeg", "gif"])
 
 app = flask.Flask(__name__)
@@ -179,7 +180,7 @@ def edit_project(id):
     return flask.render_template(
         "project_edit.html.tpl",
         link = "projects",
-        sub_link = "edit",        
+        sub_link = "edit",
         project = project
     )
 
@@ -488,15 +489,11 @@ def _get_run(id, schedule = False):
         try: configuration = json.load(build_file)
         finally: build_file.close()
 
-        # retrieves the current directory as a backup procedure
-        # then changes the directory into the project folder and
         # executes the automium task using the the build path
-        # and the configuration map as parameters, at last and as
-        # final procedure changes the directory to the current
-        current = os.getcwd()
-        os.chdir(project_folder)
-        try: automium.run(build_path, configuration)
-        finally: os.chdir(current)
+        # and the configuration map as parameters, then sets
+        # the current (execution) path as the project folder
+        # so that the resulting files are placed there
+        automium.run(build_path, configuration, current = project_folder)
 
         # retrieves the current associated project and build
         # and uses them to update the project structure with
