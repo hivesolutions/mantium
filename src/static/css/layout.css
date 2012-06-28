@@ -40,6 +40,10 @@
     margin: 20px 0px 0px 0px;
 }
 
+html {
+    overflow-y: scroll;
+}
+
 body {
     color: #666666;
     font-family: "Garamond", "Georgia", "serif";
