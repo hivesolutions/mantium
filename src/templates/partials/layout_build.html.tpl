@@ -2,12 +2,28 @@
 {% block header %}
     {{ super() }}
     <div class="links sub-links">
-        <a href="{{ url_for('show_build', id = project.id, build_id = build.id) }}">info</a>
+        {% if sub_link == "info" %}
+            <a href="{{ url_for('show_build', id = project.id, build_id = build.id) }}" class="active">info</a>
+        {% else %}
+            <a href="{{ url_for('show_build', id = project.id, build_id = build.id) }}">info</a>
+        {% endif %}
         //
-        <a href="{{ url_for('log_build', id = project.id, build_id = build.id) }}">log</a>
+        {% if sub_link == "log" %}
+            <a href="{{ url_for('log_build', id = project.id, build_id = build.id) }}" class="active">log</a>
+        {% else %}
+            <a href="{{ url_for('log_build', id = project.id, build_id = build.id) }}">log</a>
+        {% endif %}
         //
-        <a href="{{ url_for('files_build', id = project.id, build_id = build.id, path = '') }}">files</a>
+        {% if sub_link == "files" %}
+            <a href="{{ url_for('files_build', id = project.id, build_id = build.id, path = '') }}" class="active">files</a>
+        {% else %}
+            <a href="{{ url_for('files_build', id = project.id, build_id = build.id, path = '') }}">files</a>
+        {% endif %}
         //
-        <a href="{{ url_for('delete_build', id = project.id, build_id = build.id) }}">delete</a>
+        {% if sub_link == "delete" %}
+            <a href="{{ url_for('delete_build', id = project.id, build_id = build.id) }}" class="active">delete</a>
+        {% else %}
+            <a href="{{ url_for('delete_build', id = project.id, build_id = build.id) }}">delete</a>
+        {% endif %}
     </div>
 {% endblock %}

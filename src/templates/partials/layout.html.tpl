@@ -11,13 +11,29 @@
         {% block header %}
             <h1>{% block name %}{% endblock %}</h1>
             <div class="links">
-                <a href="{{ url_for('index') }}">home</a>
+                {% if link == "home" %}
+                    <a href="{{ url_for('index') }}" class="active">home</a>
+                {% else %}
+                    <a href="{{ url_for('index') }}">home</a>
+                {% endif %}
                 //
-                <a href="{{ url_for('projects') }}">projects</a>
+                {% if link == "projects" %}
+                    <a href="{{ url_for('projects') }}" class="active">projects</a>
+                {% else %}
+                    <a href="{{ url_for('projects') }}">projects</a>
+                {% endif %}
                 //
-                <a href="{{ url_for('new_project') }}">new project</a>
+                {% if link == "new_project" %}
+                    <a href="{{ url_for('new_project') }}" class="active">new project</a>
+                {% else %}
+                    <a href="{{ url_for('new_project') }}">new project</a>
+                {% endif %}
                 //
-                <a href="{{ url_for('status') }}">status</a>
+                {% if link == "status" %}
+                    <a href="{{ url_for('status') }}" class="active">status</a>
+                {% else %}
+                    <a href="{{ url_for('status') }}">status</a>
+                {% endif %}
             </div>
         {% endblock %}
     </div>

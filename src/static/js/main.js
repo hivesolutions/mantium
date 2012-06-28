@@ -22,3 +22,13 @@
 // __date__      = $LastChangedDate: 2009-04-01 18:22:49 +0100 (qua, 01 Abr 2009) $
 // __copyright__ = Copyright (c) 2010 Hive Solutions Lda.
 // __license__   = GNU General Public License (GPL), Version 3
+
+jQuery(document).ready(function() {
+            jQuery("ul li").dblclick(function() {
+                        var element = jQuery(this);
+                        var link = jQuery("a", element);
+                        var linkValue = link.attr("href");
+                        if(!linkValue) { return; }
+                        document.location = linkValue;
+                    });
+        });

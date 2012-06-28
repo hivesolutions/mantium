@@ -55,12 +55,16 @@ body {
 }
 
 h1, h2, h3, h4, h5 {
-	color: #4d4d4d;
+    color: #4d4d4d;
 }
 
 a {
     color: #3668c6;
     text-decoration: none;
+}
+
+a.active {
+    font-weight: bold;
 }
 
 a:hover {
@@ -154,7 +158,7 @@ ul {
 }
 
 ul li {
-    cursor: pointer;
+    cursor: default;
     list-style: none;
     margin: 12px 0px 12px 0px;
     padding: 12px 0px 12px 0px;
@@ -166,7 +170,7 @@ ul li:hover {
 
 ul li .name {
     font-size: 20px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 ul li .description {

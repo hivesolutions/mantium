@@ -65,7 +65,8 @@ execution_thread.start()
 @app.route("/index")
 def index():
     return flask.render_template(
-        "index.html.tpl"
+        "index.html.tpl",
+        link = "home"
     )
 
 @app.route("/login", methods = ("GET",))
@@ -85,13 +86,15 @@ def projects():
     projects = _get_projects()
     return flask.render_template(
         "project_list.html.tpl",
+        link = "projects",
         projects = projects
     )
 
 @app.route("/projects/new", methods = ("GET",))
 def new_project():
     return flask.render_template(
-        "project_new.html.tpl"
+        "project_new.html.tpl",
+        link = "new_project"
     )
 
 @app.route("/projects", methods = ("POST",))
@@ -148,7 +151,9 @@ def show_project(id):
     project = _get_project(id)
     return flask.render_template(
         "project_show.html.tpl",
-        project = project
+        project = project,
+        link = "projects",
+        sub_link = "info"
     )
 
 @app.route("/projects/<id>/edit", methods = ("GET",))
@@ -160,7 +165,9 @@ def edit_project(id):
     finally: project_file.close()
     return flask.render_template(
         "project_edit.html.tpl",
-        project = project
+        project = project,
+        link = "projects",
+        sub_link = "edit"
     )
 
 @app.route("/projects/<id>/edit", methods = ("POST",))
@@ -230,7 +237,15 @@ def run_project(id):
         try: automium.run(build_path, configuration)
         finally: os.chdir(current)
 
-    execution_thread.insert_work(time.time(), _run)
+        project = _get_project(id)
+        project["builds"] = project.get("builds", 0) + 1
+        _set_project(id, project)
+
+    # inserts a new work task into the execution thread
+    # for the current time, this way this task is going
+    # to be executed immediately
+    current_time = time.time()
+    execution_thread.insert_work(current_time, _run)
 
     return flask.redirect(
         flask.url_for("show_project", id = id)
@@ -243,7 +258,9 @@ def builds(id):
     return flask.render_template(
         "build_list.html.tpl",
         project = project,
-        builds = builds
+        builds = builds,
+        link = "projects",
+        sub_link = "builds"
     )
 
 @app.route("/projects/<id>/builds/<build_id>", methods = ("GET",))
@@ -253,7 +270,9 @@ def show_build(id, build_id):
     return flask.render_template(
         "build_show.html.tpl",
         project = project,
-        build = build
+        build = build,
+        link = "projects",
+        sub_link = "info"
     )
 
 @app.route("/projects/<id>/builds/<build_id>/delete", methods = ("GET", "POST"))
@@ -275,7 +294,9 @@ def log_build(id, build_id):
         "build_log.html.tpl",
         project = project,
         build = build,
-        log = log
+        log = log,
+        link = "projects",
+        sub_link = "log"
     )
 
 @app.route("/projects/<id>/builds/<build_id>/files/", defaults = {"path" : "" }, methods = ("GET",))
@@ -283,13 +304,25 @@ def log_build(id, build_id):
 def files_build(id, build_id, path = ""):
     project = _get_project(id)
     build = _get_build(id, build_id)
+
+    file_path = _get_file_path(id, build_id, path)
+    is_directory = os.path.isdir(file_path)
+    if not is_directory: return flask.send_file(file_path)
+
+    if path and not path.endswith("/"):
+        return flask.redirect(
+            flask.url_for("files_build", id = id, build_id = build_id, path = path + "/")
+        )
+
     files = _get_build_files(id, build_id, path)
     return flask.render_template(
         "build_files.html.tpl",
         project = project,
         build = build,
         path = path,
-        files = files
+        files = files,
+        link = "projects",
+        sub_link = "files"
     )
 
 @app.route("/status")
@@ -334,6 +367,13 @@ def _get_project(id):
     finally: project_file.close()
     return project
 
+def _set_project(id, project):
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    project_path = os.path.join(project_folder, "description.json")
+    project_file = open(project_path, "wb")
+    try: json.dump(project, project_file)
+    finally: project_file.close()
+
 def _get_build(id, build_id):
     project_folder = os.path.join(PROJECTS_FOLDER, id)
     builds_folder = os.path.join(project_folder, "builds")
@@ -372,6 +412,14 @@ def _get_build_files(id, build_id, path = ""):
     entries = os.listdir(full_path)
     path and entries.insert(0, "..")
     return entries
+
+def _get_file_path(id, build_id, path):
+    path = path.strip("/")
+    project_folder = os.path.join(PROJECTS_FOLDER, id)
+    builds_folder = os.path.join(project_folder, "builds")
+    build_folder = os.path.join(builds_folder, build_id)
+    full_path = os.path.join(build_folder, path)
+    return full_path
 
 def _touch_atm(id):
     project_folder = os.path.join(PROJECTS_FOLDER, id)
