@@ -197,8 +197,8 @@ def update_project(id):
 
     # TODO: TENHO DE POR AKI O VALIDADOR !!!!
 
-    project = {
-        "id" : id,
+    project = _get_project(id)
+    project.update({
         "name" : name,
         "description" : description,
         "recursion" : {
@@ -207,7 +207,7 @@ def update_project(id):
             "minutes" : minutes,
             "seconds" : seconds
         }
-    }
+    })
 
     # creates the path to the project folder and creates it
     # in case its required then creates the path to the description
