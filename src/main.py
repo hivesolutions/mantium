@@ -58,9 +58,6 @@ app = flask.Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 1024 ** 3
 
-execution_thread = execution.ExecutionThread()
-execution_thread.start()
-
 @app.route("/")
 @app.route("/index")
 def index():
@@ -528,6 +525,22 @@ def _schedule_project(project):
     # inserts a new work task into the execution thread
     # for the next (target time)
     execution_thread.insert_work(next_time, _run)
+
+def _schedule_projects():
+    # retrieves all the currently available project and
+    # schedules all of the them in the scheduler task
+    projects = _get_projects()
+    for project in projects: _schedule_project(project)
+
+# creates the thread that it's going to be used to
+# execute the various background tasks and starts
+# it, providing the mechanism for execution
+execution_thread = execution.ExecutionThread()
+execution_thread.start()
+
+# schedules the various projects currently registered in
+# the system internal structures
+_schedule_projects()
 
 if __name__ == "__main__":
     app.debug = True
