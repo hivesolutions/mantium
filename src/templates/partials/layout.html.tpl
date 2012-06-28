@@ -29,10 +29,10 @@
                     <a href="{{ url_for('new_project') }}">new project</a>
                 {% endif %}
                 //
-                {% if link == "status" %}
-                    <a href="{{ url_for('status') }}" class="active">status</a>
+                {% if link == "about" %}
+                    <a href="{{ url_for('about') }}" class="active">about</a>
                 {% else %}
-                    <a href="{{ url_for('status') }}">status</a>
+                    <a href="{{ url_for('about') }}">about</a>
                 {% endif %}
             </div>
         {% endblock %}

@@ -124,6 +124,12 @@ def create_project():
         }
     }
 
+    # retrieves the current time value and the recursion value for
+    # the project and uses it to calculate the initial "next time"
+    current_time = time.time()
+    recursion = _get_recursion(project)
+    project["next_time"] = current_time + recursion
+
     # creates the path to the project folder and creates it
     # in case its required then creates the path to the description
     # file of the project and dumps the json describing the project
@@ -158,9 +164,9 @@ def show_project(id):
     project = _get_project(id)
     return flask.render_template(
         "project_show.html.tpl",
-        project = project,
         link = "projects",
-        sub_link = "info"
+        sub_link = "info",
+        project = project
     )
 
 @app.route("/projects/<id>/edit", methods = ("GET",))
@@ -172,9 +178,9 @@ def edit_project(id):
     finally: project_file.close()
     return flask.render_template(
         "project_edit.html.tpl",
-        project = project,
         link = "projects",
-        sub_link = "edit"
+        sub_link = "edit",        
+        project = project
     )
 
 @app.route("/projects/<id>/edit", methods = ("POST",))
@@ -262,10 +268,10 @@ def builds(id):
     builds = _get_builds(id)
     return flask.render_template(
         "build_list.html.tpl",
-        project = project,
-        builds = builds,
         link = "projects",
-        sub_link = "builds"
+        sub_link = "builds",
+        project = project,
+        builds = builds
     )
 
 @app.route("/projects/<id>/builds/<build_id>", methods = ("GET",))
@@ -274,10 +280,10 @@ def show_build(id, build_id):
     build = _get_build(id, build_id)
     return flask.render_template(
         "build_show.html.tpl",
-        project = project,
-        build = build,
         link = "projects",
-        sub_link = "info"
+        sub_link = "info",
+        project = project,
+        build = build
     )
 
 @app.route("/projects/<id>/builds/<build_id>/delete", methods = ("GET", "POST"))
@@ -297,11 +303,11 @@ def log_build(id, build_id):
     log = _get_build_log(id, build_id)
     return flask.render_template(
         "build_log.html.tpl",
+        link = "projects",
+        sub_link = "log",
         project = project,
         build = build,
-        log = log,
-        link = "projects",
-        sub_link = "log"
+        log = log
     )
 
 @app.route("/projects/<id>/builds/<build_id>/files/", defaults = {"path" : "" }, methods = ("GET",))
@@ -322,17 +328,20 @@ def files_build(id, build_id, path = ""):
     files = _get_build_files(id, build_id, path)
     return flask.render_template(
         "build_files.html.tpl",
+        link = "projects",
+        sub_link = "files",
         project = project,
         build = build,
         path = path,
-        files = files,
-        link = "projects",
-        sub_link = "files"
+        files = files
     )
 
-@app.route("/status")
-def status():
-    return "this is a status page"
+@app.route("/about")
+def about():
+    return flask.render_template(
+        "about.html.tpl",
+        link = "about"
+    )
 
 @app.errorhandler(404)
 def handler_404(error):
@@ -463,16 +472,27 @@ def _get_recursion(project):
 
 def _get_run(id, schedule = False):
     def _run():
+        # retrieves the current time as the initial time
+        # for the build automation execution
         initial_time = time.time()
 
+        # "calculates" the build file path using the projects
+        # folder as the base path for such calculus
         project_folder = os.path.join(PROJECTS_FOLDER, id)
         build_path = os.path.join(project_folder, "_build")
         _build_path = os.path.join(build_path, "build.json")
 
+        # opens the build file descriptor and parses using
+        # the json parser then closes the file
         build_file = open(_build_path, "rb")
         try: configuration = json.load(build_file)
         finally: build_file.close()
 
+        # retrieves the current directory as a backup procedure
+        # then changes the directory into the project folder and
+        # executes the automium task using the the build path
+        # and the configuration map as parameters, at last and as
+        # final procedure changes the directory to the current
         current = os.getcwd()
         os.chdir(project_folder)
         try: automium.run(build_path, configuration)
