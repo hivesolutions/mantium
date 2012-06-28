@@ -76,7 +76,6 @@ table {
 
 table td {
     font-size: 18px;
-    font-weight: bold;
     padding: 8px 20px 8px 20px;
 }
 
@@ -147,6 +146,7 @@ label {
 
 ul {
     margin: 20px 0px 20px 0px;
+    padding: 0px 0px 0px 0px;
 }
 
 ul li {
@@ -227,6 +227,6 @@ pre {
 .separator-horizontal {
     background: transparent url(../images/separator-horizontal.png) no-repeat center center;
     height: 10px;
-    margin: 30px auto 6px auto;
+    margin: 12px auto 12px auto;
     width: 260px;
 }
