@@ -243,32 +243,11 @@ def delete_project(id):
 
 @app.route("/projects/<id>/run")
 def run_project(id):
-    def _run():
-        project_folder = os.path.join(PROJECTS_FOLDER, id)
-        build_path = os.path.join(project_folder, "_build")
-        _build_path = os.path.join(build_path, "build.json")
-
-        build_file = open(_build_path, "rb")
-        try: configuration = json.load(build_file)
-        finally: build_file.close()
-
-        current = os.getcwd()
-        os.chdir(project_folder)
-        try: automium.run(build_path, configuration)
-        finally: os.chdir(current)
-
-        next_time = time.time() + 100
-        _next_time = datetime.datetime.fromtimestamp(next_time)
-
-        build = _get_latest_build(id)
-        project = _get_project(id)
-        project["result"] = build["result"]
-        project["_result"] = build["_result"]
-        project["build_time"] = build.get("delta", 0)
-        project["builds"] = project.get("builds", 0) + 1
-        project["next_time"] = next_time
-        project["_next_time"] = _next_time.strftime("%b %d, %Y %H:%M:%S")
-        _set_project(id, project)
+    # retrieves the "custom" run function to be used
+    # as the work "callable", note that the schedule flag
+    # is not set meaning that no schedule will be done
+    # after the execution
+    _run = _get_run(id, schedule = False)
 
     # inserts a new work task into the execution thread
     # for the current time, this way this task is going
@@ -394,6 +373,10 @@ def _get_project(id):
     project_file = open(project_path, "rb")
     try: project = json.load(project_file)
     finally: project_file.close()
+
+    next_time = datetime.datetime.fromtimestamp(project["next_time"])
+    project["_next_time"] = next_time.strftime("%b %d, %Y %H:%M:%S")
+
     return project
 
 def _set_project(id, project):
@@ -468,6 +451,83 @@ def _touch_atm(id):
 
     zip_file = zipfile.ZipFile(file_path, "r")
     zip_file.extractall(build_path)
+
+def _get_recursion(project):
+    recursion = project.get("recursion", {})
+    days = recursion.get("days", 0)
+    hours = recursion.get("hours", 0)
+    minutes = recursion.get("minutes", 0)
+    seconds = recursion.get("seconds", 0)
+
+    return days * 86400\
+        + hours * 3600\
+        + minutes * 60\
+        + seconds
+
+def _get_run(id, schedule = False):
+    def _run():
+        initial_time = time.time()
+
+        project_folder = os.path.join(PROJECTS_FOLDER, id)
+        build_path = os.path.join(project_folder, "_build")
+        _build_path = os.path.join(build_path, "build.json")
+
+        build_file = open(_build_path, "rb")
+        try: configuration = json.load(build_file)
+        finally: build_file.close()
+
+        current = os.getcwd()
+        os.chdir(project_folder)
+        try: automium.run(build_path, configuration)
+        finally: os.chdir(current)
+
+        # retrieves the current associated project and build
+        # and uses them to update the project structure with
+        # the new value (then flushes the project contents)
+        project = _get_project(id)
+        build = _get_latest_build(id)
+        project["result"] = build["result"]
+        project["_result"] = build["_result"]
+        project["build_time"] = build.get("delta", 0)
+        project["builds"] = project.get("builds", 0) + 1
+        _set_project(id, project)
+
+        # in case schedule flag is not set, no need to
+        # recalculate the new "next time" and put the
+        # the new work into the scheduler, returns now
+        if not schedule: return
+
+        # retrieves the recursion integer value and uses
+        # it to recalculate the next time value setting
+        # then the value in the project value
+        recursion = _get_recursion(project)
+        next_time = initial_time + recursion
+        project["next_time"] = next_time
+
+        # re-saves the project because the next time value
+        # has changed (flushes contents) then schedules the
+        # project putting the work into the scheduler
+        _set_project(id, project)
+        _schedule_project(project)
+
+    # returns the "custom" run function that contains a
+    # transitive closure on the project identifier
+    return _run
+
+def _schedule_project(project):
+    # retrieves the various required project attributes
+    # for the scheduling process they are going to be used
+    # in the scheduling process
+    id = project["id"]
+    next_time = project.get("next_time", time.time())
+
+    # retrieves the "custom" run function to be used as the
+    # work for the scheduler
+    _run = _get_run(id, schedule = True)
+
+    # inserts a new work task into the execution thread
+    # for the next (target time)
+    execution_thread.insert_work(next_time, _run)
 
 if __name__ == "__main__":
     app.debug = True
