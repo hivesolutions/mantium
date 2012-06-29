@@ -42,6 +42,7 @@ import uuid
 import json
 import time
 import flask
+import atexit
 import shutil
 import zipfile
 import automium
@@ -556,6 +557,12 @@ def run():
     app.run(use_debugger = True, debug = True, use_reloader = False, host = "0.0.0.0")
     #app.run()
 
+    # stop the execution thread so that it's possible to
+    # the process to return the calling
+    execution_thread.stop()
+
+@atexit.register
+def stop_thread():
     # stop the execution thread so that it's possible to
     # the process to return the calling
     execution_thread.stop()
