@@ -60,6 +60,8 @@ app = flask.Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 1024 ** 3
 
+start_time = int(time.time())
+
 @app.route("/")
 @app.route("/index")
 def index():
@@ -341,9 +343,11 @@ def files_build(id, build_id, path = ""):
 
 @app.route("/about")
 def about():
+    about = _get_about()
     return flask.render_template(
         "about.html.tpl",
-        link = "about"
+        link = "about",
+        about = about
     )
 
 @app.errorhandler(404)
@@ -454,6 +458,14 @@ def _get_file_path(id, build_id, path):
     build_folder = os.path.join(builds_folder, build_id)
     full_path = os.path.join(build_folder, path)
     return full_path
+
+def _get_about():
+    current_time = int(time.time()) 
+    about = {
+        "uptime" : current_time - start_time,
+        "system" : automium.resolve_os()
+    }
+    return about
 
 def _touch_atm(id):
     project_folder = os.path.join(PROJECTS_FOLDER, id)
