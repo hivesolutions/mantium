@@ -303,6 +303,7 @@ def log_build(id, build_id):
     project = _get_project(id)
     build = _get_build(id, build_id)
     log = _get_build_log(id, build_id)
+    log = log.decode("utf-8")
     return flask.render_template(
         "build_log.html.tpl",
         link = "projects",
@@ -351,6 +352,10 @@ def handler_404(error):
 
 @app.errorhandler(413)
 def handler_413(error):
+    return str(error)
+
+@app.errorhandler(BaseException)
+def handler_exception(error):
     return str(error)
 
 def _get_projects():
