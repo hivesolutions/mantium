@@ -16,7 +16,7 @@
             </tr>
             <tr>
                 <td class="right label" width="50%">build time</td>
-                <td class="left value" width="50%">{{ project.build_time|default(0) }} seconds</td>
+                <td class="left value" width="50%">{{ project._build_time|default('0 seconds') }}</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">build count</td>

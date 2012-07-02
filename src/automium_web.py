@@ -413,9 +413,11 @@ def _get_build(id, build_id):
     finally: build_file.close()
 
     result = build["result"]
+    delta = build["delta"]
     start_time = datetime.datetime.fromtimestamp(build["start_time"])
     end_time = datetime.datetime.fromtimestamp(build["end_time"])
     build["_result"] = result and "passed" or "failed"
+    build["_delta"] = automium.delta_string(delta)
     build["_start_time"] = start_time.strftime("%b %d, %Y %H:%M:%S")
     build["_end_time"] = end_time.strftime("%b %d, %Y %H:%M:%S")
 
@@ -460,9 +462,9 @@ def _get_file_path(id, build_id, path):
     return full_path
 
 def _get_about():
-    current_time = int(time.time()) 
+    current_time = int(time.time())
     about = {
-        "uptime" : current_time - start_time,
+        "uptime" : automium.delta_string(current_time - start_time),
         "system" : automium.resolve_os()
     }
     return about
@@ -521,6 +523,7 @@ def _get_run(id, schedule = False):
         project["result"] = build["result"]
         project["_result"] = build["_result"]
         project["build_time"] = build.get("delta", 0)
+        project["_build_time"] = build.get("_delta", "0 seconds")
         project["builds"] = project.get("builds", 0) + 1
         _set_project(id, project)
 

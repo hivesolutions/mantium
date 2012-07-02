@@ -18,7 +18,7 @@
             </tr>
             <tr>
                 <td class="right label" width="50%">duration</td>
-                <td class="left value" width="50%">{{ build.delta }} seconds</td>
+                <td class="left value" width="50%">{{ build._delta }}</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">size</td>
