@@ -105,10 +105,11 @@ def find_data_files(source_path, target_path, patterns):
 # finds the various static and template data files to be
 # included in the package (this is required for non python
 # files by the setuptools)
+base_data_files = find_data_files("src", "", ["automium_web.wsgi"])
 projects_data_files = find_data_files("src/projects", "projects", ["README.md"])
 static_data_files = find_data_files("src/static", "static", ["css/*", "images/*", "js/*"])
 templates_data_files = find_data_files("src/templates", "templates", ["*", "partials/*"])
-data_files = projects_data_files + static_data_files + templates_data_files
+data_files = base_data_files + projects_data_files + static_data_files + templates_data_files
 
 # retrieves the current root directory (from the
 # currently executing file) and in case its not
