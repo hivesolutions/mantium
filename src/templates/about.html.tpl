@@ -18,11 +18,11 @@
         <tbody>
             <tr>
                 <td class="right label" width="50%">uptime</td>
-                <td class="left value" width="50%">12 seconds</td>
+                <td class="left value" width="50%">{{ about.uptime }} seconds</td>
             </tr>
             <tr>
-                <td class="right label" width="50%">size</td>
-                <td class="left value" width="50%">123 MBytes</td>
+                <td class="right label" width="50%">system</td>
+                <td class="left value" width="50%">{{ about.system }}</td>
             </tr>
         </tbody>
     </table>
