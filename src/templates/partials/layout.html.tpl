@@ -3,7 +3,7 @@
     {% block head %}
         {% include "partials/content_type.html.tpl" %}
         {% include "partials/includes.html.tpl" %}
-        <title>Automium - {% block title %}{% endblock %}</title>
+        <title>Automium / {% block title %}{% endblock %}</title>
     {% endblock %}
 </head>
 <body class="ux">
