@@ -110,7 +110,11 @@ def create_project():
     minutes = int(flask.request.form.get("minutes", 0) or 0)
     seconds = int(flask.request.form.get("seconds", 0) or 0)
 
-    # TODO: TENHO DE POR AKI O VALIDADOR !!!!
+    # sets the validation method in the various attributes
+    # coming from the client form
+    not_null(name) and not_empty(name)
+    not_null(description) and not_empty(description)
+    not_null(build_file)
 
     # generates the unique identifier to be used to identify
     # the project reference and then uses it to create the
@@ -199,7 +203,11 @@ def update_project(id):
     minutes = int(flask.request.form.get("minutes", 0) or 0)
     seconds = int(flask.request.form.get("seconds", 0) or 0)
 
-    # TODO: TENHO DE POR AKI O VALIDADOR !!!!
+    # sets the validation method in the various attributes
+    # coming from the client form
+    not_null(name) and not_empty(name)
+    not_null(description) and not_empty(description)
+    not_null(build_file)
 
     project = _get_project(id)
     project.update({
@@ -361,6 +369,14 @@ def handler_413(error):
 @app.errorhandler(BaseException)
 def handler_exception(error):
     return str(error)
+
+def not_null(value):
+    if not value == None: return True
+    raise RuntimeError("value is not set")
+
+def not_empty(value):
+    if len(value): return True
+    raise RuntimeError("value is empty")
 
 def _get_projects():
     projects = []
