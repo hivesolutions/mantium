@@ -28,7 +28,9 @@ jQuery(document).ready(function() {
                         var element = jQuery(this);
                         var link = jQuery("a", element);
                         var linkValue = link.attr("href");
-                        if(!linkValue) { return; }
+                        if (!linkValue) {
+                            return;
+                        }
                         document.location = linkValue;
                     });
         });
