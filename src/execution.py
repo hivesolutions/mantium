@@ -79,11 +79,11 @@ class ExecutionThread(threading.Thread):
         self.work_list = []
         self.work_lock = threading.RLock()
 
-    def run (self):
+    def run(self):
         # iterates continuously (executing work)
         # while the run flag is set
         while self.run_flag:
-            # creates a list list that will wold the
+            # creates a list list that will would the
             # work tuples to be executed (this way the
             # lock problem is avoided)
             execution_list = []
