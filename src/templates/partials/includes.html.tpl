@@ -1,5 +1,5 @@
 <!-- css inclusion -->
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/uxf/css/ux-min.js') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/uxf/css/ux-min.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
 
 <!-- favicon inclusion -->
