@@ -107,7 +107,7 @@ def find_data_files(source_path, target_path, patterns):
 # files by the setuptools)
 base_data_files = find_data_files("src", "", ["automium_web.wsgi"])
 projects_data_files = find_data_files("src/projects", "projects", ["README.md"])
-static_data_files = find_data_files("src/static", "static", ["css/*", "images/*", "js/*"])
+static_data_files = find_data_files("src/static", "static", ["css/*", "images/*", "js/*", "libs/*"])
 templates_data_files = find_data_files("src/templates", "templates", ["*", "partials/*"])
 data_files = base_data_files + projects_data_files + static_data_files + templates_data_files
 
