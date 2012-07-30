@@ -242,7 +242,7 @@ def update_project(id):
 
         # touches the automium file so that its contents are
         # correctly deployed into the build directory
-        _touch_atm(id);
+        _touch_atm(id)
 
     return flask.redirect(
         flask.url_for("show_project", id = id)
