@@ -56,8 +56,14 @@
 }
 
 #footer {
-    line-height: 22px;
+    line-height: 26px;
     margin: 20px 0px 0px 0px;
+}
+
+#overlay {
+    display: none;
+    left: 0px;
+    top: 0px;
 }
 
 html {
@@ -76,6 +82,10 @@ body {
 
 body.wide {
     width: 820px;
+}
+
+body.full {
+    width: inherit;
 }
 
 h1, h2, h3, h4, h5 {
@@ -133,6 +143,10 @@ input {
     outline: none;
     padding: 0px 8px 0px 8px;
     width: 524px;
+}
+
+input.small {
+    width: 324px;
 }
 
 input.lower {
@@ -284,3 +298,4 @@ pre {
     text-align: center;
     width: 24px;
 }
+
