@@ -8,19 +8,19 @@
         <tbody>
             <tr>
                 <td class="right label" width="50%">status</td>
-                <td class="left value {{ project._result }}" width="50%">{{ project._result|default('no builds') }}</td>
+                <td class="left value {{ project._result }}" width="50%">{{ project._result | default('no builds') }}</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">next run</td>
-                <td class="left value" width="50%">{{ project._next_time|default('not scheduled') }}</td>
+                <td class="left value" width="50%">{{ project._next_time | default('not scheduled') }}</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">build time</td>
-                <td class="left value" width="50%">{{ project._build_time|default('0 seconds') }}</td>
+                <td class="left value" width="50%">{{ project._build_time | default('0 seconds') }}</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">build count</td>
-                <td class="left value" width="50%">{{ project.builds|default(0) }} builds</td>
+                <td class="left value" width="50%">{{ project.builds | default(0) }} builds</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">build file</td>
