@@ -54,7 +54,6 @@ CURRENT_DIRECTORY = os.path.dirname(__file__)
 CURRENT_DIRECTORY_ABS = os.path.abspath(CURRENT_DIRECTORY)
 UPLOAD_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "uploads")
 PROJECTS_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "projects")
-ALLOWED_EXTENSIONS = set(["txt", "pdf", "png", "jpg", "jpeg", "gif"])
 
 app = flask.Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
