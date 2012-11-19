@@ -14,7 +14,7 @@ both a
 ### Viriatum
 
 In order to configure automium together with viraitum you must add a new location to
-the ''viritaum.ini'' configuration file.
+the **viriatum.ini** configuration file.
 
 ```
 [location:automium]
