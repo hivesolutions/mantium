@@ -19,7 +19,8 @@ the ''viritaum.ini'' configuration file.
 ```[location:automium]
 path = /automium
 handler = wsgi
-script_path = /usr/local/lib/python2.7/dist-packages/automium_web-0.1.0-py2.7.egg/automium_web.wsgi```
+script_path = /usr/local/lib/python2.7/dist-packages/automium_web-0.1.0-py2.7.egg/automium_web.wsgi
+```
 
 ## Inspiration
 
