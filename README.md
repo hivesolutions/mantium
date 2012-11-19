@@ -1,6 +1,6 @@
 # Automium Web Interface
 
-The web interface for the automium build system.  
+The web interface for the [automation](https://github.com/hivesolutions/automium) build system.  
 Should be able to control a set of automium projects displaying the results of build runs.
 
 ## Installation
