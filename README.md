@@ -16,7 +16,8 @@ both a
 In order to configure automium together with viraitum you must add a new location to
 the ''viritaum.ini'' configuration file.
 
-```[location:automium]
+```
+[location:automium]
 path = /automium
 handler = wsgi
 script_path = /usr/local/lib/python2.7/dist-packages/automium_web-0.1.0-py2.7.egg/automium_web.wsgi
