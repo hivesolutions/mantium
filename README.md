@@ -3,7 +3,7 @@
 The web interface for the [automation](https://github.com/hivesolutions/automium) build system.  
 Should be able to control a set of automium projects displaying the results of build runs.
 The automium system uses the atm file specification that defines a zip file containing
-both a 
+both the specification (build.json) file and the scripts to be run.
 
 ## Installation
 
