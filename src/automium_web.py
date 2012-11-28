@@ -48,7 +48,7 @@ import zipfile
 import automium
 import datetime
 
-import execution
+import quorum
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
 CURRENT_DIRECTORY_ABS = os.path.abspath(CURRENT_DIRECTORY)
@@ -94,11 +94,23 @@ def projects():
 def new_project():
     return flask.render_template(
         "project_new.html.tpl",
-        link = "new_project"
+        link = "new_project",
+        errors = {}
     )
 
 @app.route("/projects", methods = ("POST",))
 def create_project():
+    # runs the validation process on the various arguments
+    # provided to the project
+    errors, project = quorum.validate("project")
+    if errors:
+        return flask.render_template(
+            "project_new.html.tpl",
+            link = "new_project",
+            project = project,
+            errors = errors
+        )
+
     # retrieves all the parameters from the request to be
     # handled then validated the required ones
     name = flask.request.form.get("name", None)
@@ -108,12 +120,6 @@ def create_project():
     hours = int(flask.request.form.get("hours", 0) or 0)
     minutes = int(flask.request.form.get("minutes", 0) or 0)
     seconds = int(flask.request.form.get("seconds", 0) or 0)
-
-    # sets the validation method in the various attributes
-    # coming from the client form
-    not_null(name) and not_empty(name)
-    not_null(description) and not_empty(description)
-    not_null(build_file)
 
     # generates the unique identifier to be used to identify
     # the project reference and then uses it to create the
@@ -187,11 +193,24 @@ def edit_project(id):
         "project_edit.html.tpl",
         link = "projects",
         sub_link = "edit",
-        project = project
+        project = project,
+        errors = {}
     )
 
 @app.route("/projects/<id>/edit", methods = ("POST",))
 def update_project(id):
+    # runs the validation process on the various arguments
+    # provided to the project
+    errors, project = quorum.validate("project")
+    if errors:
+        return flask.render_template(
+            "project_edit.html.tpl",
+            link = "projects",
+            sub_link = "edit",
+            project = project,
+            errors = errors
+        )
+
     # retrieves all the parameters from the request to be
     # handled then validated the required ones
     name = flask.request.form.get("name", None)
@@ -201,12 +220,6 @@ def update_project(id):
     hours = int(flask.request.form.get("hours", 0) or 0)
     minutes = int(flask.request.form.get("minutes", 0) or 0)
     seconds = int(flask.request.form.get("seconds", 0) or 0)
-
-    # sets the validation method in the various attributes
-    # coming from the client form
-    not_null(name) and not_empty(name)
-    not_null(description) and not_empty(description)
-    not_null(build_file)
 
     project = _get_project(id)
     project.update({
@@ -368,14 +381,6 @@ def handler_413(error):
 @app.errorhandler(BaseException)
 def handler_exception(error):
     return str(error)
-
-def not_null(value):
-    if not value == None: return True
-    raise RuntimeError("value is not set")
-
-def not_empty(value):
-    if len(value): return True
-    raise RuntimeError("value is empty")
 
 def _get_projects():
     projects = []
@@ -585,6 +590,17 @@ def _schedule_projects():
     projects = _get_projects()
     for project in projects: _schedule_project(project)
 
+def _validate_project():
+    return [
+        quorum.not_null("name"),
+        quorum.not_empty("name"),
+
+        quorum.not_null("description"),
+        quorum.not_empty("description"),
+
+        quorum.not_null("build_file")
+    ]
+
 def run():
     # sets the debug control in the application
     # then checks the current environment variable
@@ -615,7 +631,7 @@ def stop_thread():
 # creates the thread that it's going to be used to
 # execute the various background tasks and starts
 # it, providing the mechanism for execution
-execution_thread = execution.ExecutionThread()
+execution_thread = quorum.execution.ExecutionThread()
 execution_thread.start()
 
 # schedules the various projects currently registered in
