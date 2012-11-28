@@ -95,6 +95,7 @@ def new_project():
     return flask.render_template(
         "project_new.html.tpl",
         link = "new_project",
+        project = {},
         errors = {}
     )
 
