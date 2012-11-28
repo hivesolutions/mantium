@@ -134,8 +134,7 @@ setuptools.setup(
         "scripts/pypi/automium_web_pypi.py"
     ],
     py_modules = [
-        "automium_web",
-        "execution"
+        "automium_web"
     ],
     package_dir = {
         "" : os.path.normpath("src")
