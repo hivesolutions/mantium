@@ -129,6 +129,9 @@ setuptools.setup(
     keywords = "automium build automation",
     url = "http://automium.com",
     zip_safe = False,
+    packages = [
+        "quorum"
+    ],
     scripts = [
         "scripts/pypi/automium_web.bat",
         "scripts/pypi/automium_web_pypi.py"

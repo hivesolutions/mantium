@@ -4,7 +4,7 @@
 {% block name %}{{ project.name }} :: edit{% endblock %}
 {% block content %}
     <form action="{{ url_for('update_project', id = project.id) }}" enctype="multipart/form-data" method="post" class="form">
-    	<input name="id" type="hidden" value="{{ project.id }}" />
+        <input name="id" type="hidden" value="{{ project.id }}" />
         <div class="label">
             <label>Project Name</label>
         </div>
