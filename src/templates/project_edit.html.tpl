@@ -7,13 +7,15 @@
             <label>Project Name</label>
         </div>
         <div class="input">
-            <input name="name" value="{{ project.name }}" placeholder="eg: colony" />
+            <input class="text-field" name="name" placeholder="eg: colony" value="{{ project.name }}"
+                   data-error="{{ errors.name }}" />
         </div>
         <div class="label">
             <label>Description</label>
         </div>
         <div class="input">
-            <textarea name="description" placeholder="eg: some words about the project">{{ project.description }}</textarea>
+            <textarea class="text-field" name="description" placeholder="eg: some words about the project"
+                      data-error="{{ errors.description }}">{{ project.description }}</textarea>
         </div>
         <div class="label">
             <label>Recursion</label>
@@ -28,7 +30,7 @@
             <label>Build File</label>
         </div>
         <div class="input">
-             <a data-name="build_file" class="uploader">Select & Upload the build file</a>
+             <a data-name="build_file" class="uploader" data-error="{{ errors.build_file }}>Select & Upload the build file</a>
         </div>
         <span class="button" data-link="{{ url_for('show_project', id = project.id) }}">Cancel</span>
         //
