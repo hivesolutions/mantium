@@ -48,7 +48,12 @@ import zipfile
 import automium
 import datetime
 
+import models
 import quorum
+
+MONGO_DATABASE = "automium"
+""" The default database to be used for the connection with
+the mongo database """
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
 CURRENT_DIRECTORY_ABS = os.path.abspath(CURRENT_DIRECTORY)
@@ -58,6 +63,12 @@ PROJECTS_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "projects")
 app = flask.Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 1024 ** 3
+quorum.load(
+    app,
+    mongo_database = MONGO_DATABASE,
+    name = "automium_web.debug",
+    models = models
+)
 
 start_time = int(time.time())
 
@@ -101,80 +112,25 @@ def new_project():
 
 @app.route("/projects", methods = ("POST",))
 def create_project():
-    # runs the validation process on the various arguments
-    # provided to the project
-    errors, project = quorum.validate("project")
-    if errors:
+    # creates the new project, using the provided arguments and
+    # then saves it into the data source, all the validations
+    # should be ran upon the save operation
+    project = models.Project.new()
+    try: project.save()
+    except quorum.ValidationError, error:
         return flask.render_template(
             "project_new.html.tpl",
-            link = "new_project",
-            project = project,
-            errors = errors
+            link = "new project",
+            project = error.model,
+            errors = error.errors
         )
-
-    # retrieves all the parameters from the request to be
-    # handled then validated the required ones
-    name = flask.request.form.get("name", None)
-    description = flask.request.form.get("description", None)
-    build_file = flask.request.files.get("build_file", None)
-    days = int(flask.request.form.get("days", 0) or 0)
-    hours = int(flask.request.form.get("hours", 0) or 0)
-    minutes = int(flask.request.form.get("minutes", 0) or 0)
-    seconds = int(flask.request.form.get("seconds", 0) or 0)
-
-    # generates the unique identifier to be used to identify
-    # the project reference and then uses it to create the
-    # map describing the current project
-    id = str(uuid.uuid4())
-    project = {
-        "id" : id,
-        "name" : name,
-        "description" : description,
-        "recursion" : {
-            "days" : days,
-            "hours" : hours,
-            "minutes" : minutes,
-            "seconds" : seconds
-        }
-    }
-
-    # retrieves the current time value and the recursion value for
-    # the project and uses it to calculate the initial "next time"
-    current_time = time.time()
-    recursion = _get_recursion(project)
-    project["next_time"] = current_time + recursion
-
-    # creates the path to the project folder and creates it
-    # in case its required then creates the path to the description
-    # file of the project and dumps the json describing the project
-    # into such file for latter reference
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    if not os.path.isdir(project_folder): os.makedirs(project_folder)
-    project_path = os.path.join(project_folder, "description.json")
-    project_file = open(project_path, "wb")
-    try: json.dump(project, project_file)
-    finally: project_file.close()
-
-    # saves the build file in the appropriate location
-    # folder for latter usage
-    file_path = os.path.join(project_folder, "build.atm")
-    build_file.save(file_path)
-
-    # touches the automium file so that its contents are
-    # correctly deployed into the build directory
-    _touch_atm(id)
-
-    # ensures that the builds folder exists in order to avoid
-    # any possible listing problem
-    builds_folder = os.path.join(project_folder, "builds")
-    os.makedirs(builds_folder)
 
     return flask.redirect(
         flask.url_for("show_project", id = id)
     )
 
-@app.route("/projects/<id>", methods = ("GET",))
-def show_project(id):
+@app.route("/projects/<name>", methods = ("GET",))
+def show_project(name):
     project = _get_project(id)
     return flask.render_template(
         "project_show.html.tpl",
