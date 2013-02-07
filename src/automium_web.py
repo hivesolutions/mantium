@@ -38,7 +38,6 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
-import uuid
 import json
 import time
 import flask
@@ -92,9 +91,7 @@ def do_login():
 
 @app.route("/projects", methods = ("GET",))
 def projects():
-    # retrieves the various entries from the projects
-    # folder as the various projects
-    projects = _get_projects()
+    projects = models.Project.find()
     return flask.render_template(
         "project_list.html.tpl",
         link = "projects",
@@ -126,12 +123,12 @@ def create_project():
         )
 
     return flask.redirect(
-        flask.url_for("show_project", id = id)
+        flask.url_for("show_project", name = project.name)
     )
 
 @app.route("/projects/<name>", methods = ("GET",))
 def show_project(name):
-    project = _get_project(id)
+    project = models.Project.get(name = name)
     return flask.render_template(
         "project_show.html.tpl",
         link = "projects",
@@ -139,13 +136,9 @@ def show_project(name):
         project = project
     )
 
-@app.route("/projects/<id>/edit", methods = ("GET",))
-def edit_project(id):
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    project_path = os.path.join(project_folder, "description.json")
-    project_file = open(project_path, "rb")
-    try: project = json.load(project_file)
-    finally: project_file.close()
+@app.route("/projects/<name>/edit", methods = ("GET",))
+def edit_project(name):
+    project = models.Project.get(name = name)
     return flask.render_template(
         "project_edit.html.tpl",
         link = "projects",
@@ -154,79 +147,39 @@ def edit_project(id):
         errors = {}
     )
 
-@app.route("/projects/<id>/edit", methods = ("POST",))
-def update_project(id):
-    # runs the validation process on the various arguments
-    # provided to the project
-    errors, project = quorum.validate("project")
-    if errors:
+@app.route("/projects/<name>/edit", methods = ("POST",))
+def update_project(name):
+    # finds the current project and applies the provided
+    # arguments and then saves it into the data source,
+    # all the validations should be ran upon the save operation
+    project = models.Project.get(name = name)
+    project.apply()
+    try: project.save()
+    except quorum.ValidationError, error:
         return flask.render_template(
             "project_edit.html.tpl",
             link = "projects",
             sub_link = "edit",
-            project = project,
-            errors = errors
+            project = error.model,
+            errors = error.errors
         )
 
-    # retrieves all the parameters from the request to be
-    # handled then validated the required ones
-    name = flask.request.form.get("name", None)
-    description = flask.request.form.get("description", None)
-    build_file = flask.request.files.get("build_file", None)
-    days = int(flask.request.form.get("days", 0) or 0)
-    hours = int(flask.request.form.get("hours", 0) or 0)
-    minutes = int(flask.request.form.get("minutes", 0) or 0)
-    seconds = int(flask.request.form.get("seconds", 0) or 0)
-
-    project = _get_project(id)
-    project.update({
-        "name" : name,
-        "description" : description,
-        "recursion" : {
-            "days" : days,
-            "hours" : hours,
-            "minutes" : minutes,
-            "seconds" : seconds
-        }
-    })
-
-    # creates the path to the project folder and creates it
-    # in case its required then creates the path to the description
-    # file of the project and dumps the json describing the project
-    # into such file for latter reference
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    if not os.path.isdir(project_folder): os.makedirs(project_folder)
-    project_path = os.path.join(project_folder, "description.json")
-    project_file = open(project_path, "wb")
-    try: json.dump(project, project_file)
-    finally: project_file.close()
-
-    # in case the build file was provided must handle it correctly
-    # should be processed
-    if build_file:
-        # saves the build file in the appropriate location
-        # folder for latter usage
-        file_path = os.path.join(project_folder, "build.atm")
-        build_file.save(file_path)
-
-        # touches the automium file so that its contents are
-        # correctly deployed into the build directory
-        _touch_atm(id)
-
+    # redirects the user to the show page of the project that
+    # was just updated
     return flask.redirect(
-        flask.url_for("show_project", id = id)
+        flask.url_for("show_project", name = name)
     )
 
-@app.route("/projects/<id>/delete", methods = ("GET", "POST"))
-def delete_project(id):
+@app.route("/projects/<name>/delete", methods = ("GET", "POST"))
+def delete_project(name):
     project_folder = os.path.join(PROJECTS_FOLDER, id)
     if os.path.isdir(project_folder): shutil.rmtree(project_folder)
     return flask.redirect(
         flask.url_for("projects")
     )
 
-@app.route("/projects/<id>/run")
-def run_project(id):
+@app.route("/projects/<name>/run")
+def run_project(name):
     # retrieves the "custom" run function to be used
     # as the work "callable", note that the schedule flag
     # is not set meaning that no schedule will be done
@@ -243,7 +196,7 @@ def run_project(id):
         flask.url_for("show_project", id = id)
     )
 
-@app.route("/projects/<id>/builds")
+@app.route("/projects/<name>/builds")
 def builds(id):
     project = _get_project(id)
     builds = _get_builds(id)
@@ -255,8 +208,8 @@ def builds(id):
         builds = builds
     )
 
-@app.route("/projects/<id>/builds/<build_id>", methods = ("GET",))
-def show_build(id, build_id):
+@app.route("/projects/<name>/builds/<build_id>", methods = ("GET",))
+def show_build(name, build_id):
     project = _get_project(id)
     build = _get_build(id, build_id)
     return flask.render_template(
@@ -267,8 +220,8 @@ def show_build(id, build_id):
         build = build
     )
 
-@app.route("/projects/<id>/builds/<build_id>/delete", methods = ("GET", "POST"))
-def delete_build(id, build_id):
+@app.route("/projects/<name>/builds/<build_id>/delete", methods = ("GET", "POST"))
+def delete_build(mame, build_id):
     project_folder = os.path.join(PROJECTS_FOLDER, id)
     builds_folder = os.path.join(project_folder, "builds")
     build_folder = os.path.join(builds_folder, build_id)
@@ -277,8 +230,8 @@ def delete_build(id, build_id):
         flask.url_for("builds", id = id)
     )
 
-@app.route("/projects/<id>/builds/<build_id>/log", methods = ("GET",))
-def log_build(id, build_id):
+@app.route("/projects/<name>/builds/<build_id>/log", methods = ("GET",))
+def log_build(name, build_id):
     project = _get_project(id)
     build = _get_build(id, build_id)
     log = _get_build_log(id, build_id)
@@ -292,9 +245,9 @@ def log_build(id, build_id):
         log = log
     )
 
-@app.route("/projects/<id>/builds/<build_id>/files/", defaults = {"path" : "" }, methods = ("GET",))
-@app.route("/projects/<id>/builds/<build_id>/files/<path:path>", methods = ("GET",))
-def files_build(id, build_id, path = ""):
+@app.route("/projects/<name>/builds/<build_id>/files/", defaults = {"path" : "" }, methods = ("GET",))
+@app.route("/projects/<name>/builds/<build_id>/files/<path:path>", methods = ("GET",))
+def files_build(name, build_id, path = ""):
     project = _get_project(id)
     build = _get_build(id, build_id)
 
