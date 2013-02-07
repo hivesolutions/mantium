@@ -21,10 +21,10 @@
             <label>Recursion</label>
         </div>
         <div class="recursion-set">
-            <input class="recursion" name="days" placeholder="-" /> days
-            <input class="recursion" name="hours" placeholder="-" /> hours
-            <input class="recursion" name="minutes" placeholder="-" /> minutes
-            <input class="recursion" name="seconds" placeholder="-" /> seconds
+            <input class="recursion" name="days" placeholder="-" value="{{ project.days }}" /> days
+            <input class="recursion" name="hours" placeholder="-" value="{{ project.hours }}" /> hours
+            <input class="recursion" name="minutes" placeholder="-" value="{{ project.minutes }}" /> minutes
+            <input class="recursion" name="seconds" placeholder="-" value="{{ project.seconds }}" /> seconds
         </div>
         <div class="label">
             <label>Build File</label>
