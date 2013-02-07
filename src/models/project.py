@@ -70,11 +70,11 @@ class Project(base.Base):
     build_file = dict(
         type = quorum.File
     )
-    
+
     recursion = dict(
         type = int,
         private = True
-    )    
+    )
 
     next_time = dict(
         type = int,
@@ -103,6 +103,20 @@ class Project(base.Base):
 
     def pre_create(self):
         base.Base.pre_create(self)
+
+        # retrieves the current time value and the recursion value for
+        # the project and uses it to calculate the initial "next time"
+        current_time = time.time()
+        recursion = self._get_recursion()
+        self.recursion = recursion
+        self.next_time = current_time + recursion
+
+    def pre_update(self):
+        base.Base.pre_update(self)
+
+        # in case the current build file is empty unsets
+        # it so that no override to empty occurs
+        if self.build_file.is_empty(): del self.build_file
 
         # retrieves the current time value and the recursion value for
         # the project and uses it to calculate the initial "next time"
