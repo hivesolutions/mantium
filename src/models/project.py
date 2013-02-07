@@ -70,6 +70,11 @@ class Project(base.Base):
     build_file = dict(
         type = quorum.File
     )
+    
+    recursion = dict(
+        type = int,
+        private = True
+    )    
 
     next_time = dict(
         type = int,
@@ -103,6 +108,7 @@ class Project(base.Base):
         # the project and uses it to calculate the initial "next time"
         current_time = time.time()
         recursion = self._get_recursion()
+        self.recursion = recursion
         self.next_time = current_time + recursion
 
     def _get_recursion(self):
