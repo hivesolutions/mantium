@@ -56,7 +56,6 @@ PROJECTS_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "projects")
 
 app = flask.Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["PROJECTS_FOLDER"] = PROJECTS_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 1024 ** 3
 quorum.load(
     app,
@@ -64,6 +63,7 @@ quorum.load(
     name = "automium_web.debug",
     models = models
 )
+quorum.confs("PROJECTS_FOLDER", PROJECTS_FOLDER)
 
 start_time = int(time.time())
 

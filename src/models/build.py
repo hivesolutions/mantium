@@ -113,7 +113,7 @@ class Build(base.Base):
         # retrieves the reference to the configuration value
         # containing the path the projects directory and uses
         # it to "compute" the path to the build directory
-        projects_folder = quorum.config("PROJECTS_FOLDER")
+        projects_folder = quorum.conf("PROJECTS_FOLDER")
         project_folder = os.path.join(projects_folder, self.project)
         build_folder = os.path.join(project_folder, "builds", self.id)
         return build_folder

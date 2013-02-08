@@ -206,7 +206,7 @@ class Project(base.Base):
         # retrieves the reference to the configuration value
         # containing the path the projects directory and uses
         # it to "compute" the path to the project directory
-        projects_folder = quorum.config("PROJECTS_FOLDER")
+        projects_folder = quorum.conf("PROJECTS_FOLDER")
         project_folder = os.path.join(projects_folder, self.name)
         return project_folder
 
@@ -316,13 +316,9 @@ class Project(base.Base):
         # file currently defined returns immediately
         if not hasattr(self, "build_file"): return
 
-        # retrieves the reference to the configuration value
-        # containing the path the project directory
-        projects_folder = quorum.config("PROJECTS_FOLDER")
-
         # retrieves the reference to the file that holds the
         # contents for the description of the build
-        project_folder = os.path.join(projects_folder, self.name)
+        project_folder = self.get_folder()
         file_path = os.path.join(project_folder, "build.atm")
         file = open(file_path, "wb")
         try: file.write(self.build_file.data)
