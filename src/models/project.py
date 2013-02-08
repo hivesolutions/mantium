@@ -75,7 +75,8 @@ class Project(base.Base):
     )
 
     build_file = dict(
-        type = quorum.File
+        type = quorum.File,
+        private = True
     )
 
     recursion = dict(
@@ -184,6 +185,8 @@ class Project(base.Base):
         base.Base.pre_delete(self)
 
         self._delete_folder()
+        builds = build.Build.find(project = self.name)
+        for _build in builds: _build.delete()
 
     def schedule(self):
         # retrieves the various required project attributes
@@ -288,6 +291,15 @@ class Project(base.Base):
         # returns the "custom" run function that contains a
         # transitive closure on the project identifier
         return _run
+    
+    def get_config(self):
+        project_folder = self.get_folder()
+        build_path = os.path.join(project_folder, "_build")
+        _build_path = os.path.join(build_path, "build.json")
+        build_file = open(_build_path, "rb")
+        try: config = build_file.read()
+        finally: build_file.close()
+        return config
 
     def _create_folder(self):
         project_folder = self.get_folder()
@@ -297,7 +309,7 @@ class Project(base.Base):
     def _delete_folder(self):
         project_folder = self.get_folder()
         if not os.path.isdir(project_folder): return
-        shutil.rmtree(project_folder)
+        shutil.rmtree(project_folder, ignore_errors = True)
 
     def _touch_file(self):
         # in case the current entity does not have the build
