@@ -1,4 +1,4 @@
-{% extends "partials/layout_build.html.tpl" %}
+{% extends "partials/layout_build_w.html.tpl" %}
 {% block title %}Projects{% endblock %}
 {% block name %}{{ project.name }} :: {{ build.id }}{% endblock %}
 {% block content %}
