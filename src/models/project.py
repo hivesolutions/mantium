@@ -149,8 +149,6 @@ class Project(base.Base):
         self.status = None
         self.result = None
         self.builds = 0
-        self.result_l = None
-        self.build_time_l = None
 
         # retrieves the current time value and the recursion value for
         # the project and uses it to calculate the initial "next time"
