@@ -128,6 +128,16 @@ class Build(base.Base):
         path and entries.insert(0, "..")
         return entries
 
+    def get_version(self):
+        build_folder = self.get_folder()
+        version_path = os.path.join(build_folder, "VERSION")
+        if not os.path.exists(version_path): return None
+        version_file = open(version_path, "rb")
+        try: version = version_file.read()
+        finally: version_file.close()
+        version = version.strip()
+        return version
+
     def get_log(self):
         build_folder = self.get_folder()
         log_folder = os.path.join(build_folder, "log")

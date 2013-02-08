@@ -210,6 +210,14 @@ class Project(base.Base):
         project_folder = os.path.join(projects_folder, self.name)
         return project_folder
 
+    def get_previous_build(self):
+        _build = build.Build.get(
+            sort = [("id", -1)],
+            raise_e = False,
+            project = self.name
+        )
+        return _build
+
     def get_latest_build(self):
         project_folder = self.get_folder()
         builds_folder = os.path.join(project_folder, "builds")
@@ -249,26 +257,51 @@ class Project(base.Base):
             try: configuration = json.load(build_file)
             finally: build_file.close()
 
+            # creates the initial map for the options that are
+            # going to be sent for the automium system
+            options = {}
+
+            # tries to retrieve the previous build and from it tries
+            # to retrieve the version to be used in the verification
+            # process (in case no validation the automium process
+            # does not occurs)
+            previous_build = self.get_previous_build()
+            if previous_build:
+                options["previous"] = previous_build.get_version()
+
             # executes the automium task using the the build path
             # and the configuration map as parameters, then sets
             # the current (execution) path as the project folder
             # so that the resulting files are placed there
-            automium.run(build_path, configuration, current = project_folder)
-
-            # retrieves the current associated project and build
-            # and uses them to update the project structure with
-            # the new value (then flushes the project contents)
+            result = automium.run(
+                build_path,
+                configuration,
+                options = options,
+                current = project_folder
+            )
+            
+            # retrieves the currently associated project, must updated
+            # version of it in order to make changed on it as a result
+            # of the build (order) operation
             project = Project.get(build = False, name = self.name)
-            build = self.get_latest_build()
-            build.build_m()
-            project.result = build.result
-            project.result_l = build.result_l
-            project.build_time = build.delta
-            project.build_time_l = build.delta_l
-            project.builds = project.builds + 1
-            build.project = project.name
-            build.save()
-            project.save()
+
+            # in case the result is valid a new build must be processed
+            # and saved in the current data source, otherwise ignores
+            # the build as it was not created (probably skipped)
+            if result:
+                # retrieves the latest build associated with the project
+                # and uses them to update the project structure with
+                # the new value (then flushes the project contents)
+                build = project.get_latest_build()
+                build.build_m()
+                project.result = build.result
+                project.result_l = build.result_l
+                project.build_time = build.delta
+                project.build_time_l = build.delta_l
+                project.builds = project.builds + 1
+                build.project = project.name
+                build.save()
+                project.save()
 
             # in case schedule flag is not set, no need to
             # recalculate the new "next time" and put the
