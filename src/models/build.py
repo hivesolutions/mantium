@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
+import shutil
 import datetime
 import automium
 
@@ -100,6 +101,11 @@ class Build(base.Base):
         model["start_time_l"] = stat_time_d.strftime("%b %d, %Y %H:%M:%S")
         model["end_time_l"] = end_time_d.strftime("%b %d, %Y %H:%M:%S")
 
+    def pre_delete(self):
+        base.Base.pre_delete(self)
+
+        self._delete_folder()
+
     def post_apply(self):
         base.Base.post_apply(self)
         
@@ -130,3 +136,8 @@ class Build(base.Base):
         try: log = log_file.read()
         finally: log_file.close() 
         return log        
+
+    def _delete_folder(self):
+        build_folder = self.get_folder()
+        if not os.path.isdir(build_folder): return
+        shutil.rmtree(build_folder, ignore_errors = True)
