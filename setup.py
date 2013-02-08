@@ -121,7 +121,7 @@ if not root_directory == "": os.chdir(root_directory)
 
 setuptools.setup(
     name = "automium_web",
-    version = "0.1.1",
+    version = "0.1.2",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "Automium System Web Interface",
