@@ -159,6 +159,13 @@ class Project(base.Base):
         self.recursion = recursion
         self.next_time = current_time + recursion
 
+    def post_create(self):
+        base.Base.post_create(self)
+        
+        # runs the initial schedule operation on the project so
+        # that it starts the first build process
+        self.schedule()
+
     def pre_update(self):
         base.Base.pre_update(self)
 
