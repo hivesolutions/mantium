@@ -37,7 +37,96 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import os
+import datetime
+import automium
+
+import quorum
+
 import base
 
 class Build(base.Base):
-    pass
+
+    id = dict(
+        index = True
+    )
+    
+    project = dict(
+        index = True
+    )
+
+    result = dict(
+        type = bool,
+        index = True
+    )
+
+    start_time = dict(
+        type = float,
+        index = True
+    )
+
+    end_time = dict(
+        type = float,
+        index = True
+    )
+
+    delta = dict(
+        type = int,
+        index = True
+    )
+
+    size = dict(
+        type = int,
+        index = True
+    )
+
+    size_string = dict()
+
+    system = dict(
+        index = True
+    )
+
+    @classmethod
+    def _build(cls, model, map):
+        base.Base._build(model, map)
+        result = model.get("result", False)
+        delta = model.get("delta", 0)
+        start_time = model.get("start_time", 0.0)
+        end_time = model.get("end_time", 0.0)
+        stat_time_d = datetime.datetime.fromtimestamp(start_time)
+        end_time_d = datetime.datetime.fromtimestamp(end_time)
+        model["result_l"] = result and "passed" or "failed"
+        model["delta_l"] = automium.delta_string(delta)
+        model["start_time_l"] = stat_time_d.strftime("%b %d, %Y %H:%M:%S")
+        model["end_time_l"] = end_time_d.strftime("%b %d, %Y %H:%M:%S")
+
+    def post_apply(self):
+        base.Base.post_apply(self)
+        
+    def get_folder(self):
+        # retrieves the reference to the configuration value
+        # containing the path the projects directory and uses
+        # it to "compute" the path to the build directory
+        projects_folder = quorum.config("PROJECTS_FOLDER")
+        project_folder = os.path.join(projects_folder, self.project)
+        build_folder = os.path.join(project_folder, "builds", self.id)
+        return build_folder
+    
+    def get_file_path(self, path):
+        build_folder = self.get_folder()
+        return os.path.join(build_folder, path)
+    
+    def get_files(self, path):
+        path_f = self.get_file_path(path)
+        entries = os.listdir(path_f)
+        path and entries.insert(0, "..")
+        return entries
+
+    def get_log(self):
+        build_folder = self.get_folder()
+        log_folder = os.path.join(build_folder, "log")
+        log_path = os.path.join(log_folder, "automium.log")
+        log_file = open(log_path, "rb")
+        try: log = log_file.read()
+        finally: log_file.close() 
+        return log        
