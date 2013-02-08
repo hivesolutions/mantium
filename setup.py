@@ -130,6 +130,8 @@ setuptools.setup(
     url = "http://automium.com",
     zip_safe = False,
     packages = [
+        "models",
+        "views",
         "quorum"
     ],
     scripts = [
