@@ -18,9 +18,9 @@
                 {% endif %}
                 //
                 {% if link == "projects" %}
-                    <a href="{{ url_for('projects') }}" class="active">projects</a>
+                    <a href="{{ url_for('list_projects') }}" class="active">projects</a>
                 {% else %}
-                    <a href="{{ url_for('projects') }}">projects</a>
+                    <a href="{{ url_for('list_projects') }}">projects</a>
                 {% endif %}
                 //
                 {% if link == "new_project" %}

@@ -9,9 +9,9 @@
         {% endif %}
         //
         {% if sub_link == "builds" %}
-            <a href="{{ url_for('builds', name = project.name) }}" class="active">builds</a>
+            <a href="{{ url_for('list_builds', name = project.name) }}" class="active">builds</a>
         {% else %}
-            <a href="{{ url_for('builds', name = project.name) }}">builds</a>
+            <a href="{{ url_for('list_builds', name = project.name) }}">builds</a>
         {% endif %}
         //
         {% if sub_link == "delete" %}
