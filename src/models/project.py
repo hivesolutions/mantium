@@ -279,7 +279,7 @@ class Project(base.Base):
                 options = options,
                 current = project_folder
             )
-            
+
             # retrieves the currently associated project, must updated
             # version of it in order to make changed on it as a result
             # of the build (order) operation
