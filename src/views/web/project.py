@@ -46,12 +46,19 @@ from automium_web import flask
 from automium_web import quorum
 
 @app.route("/projects", methods = ("GET",))
-def projects():
-    projects = models.Project.find()
+def list_projects():
     return flask.render_template(
         "project_list.html.tpl",
-        link = "projects",
-        projects = projects
+        link = "projects"
+    )
+
+@app.route("/projects.json", methods = ("GET",))
+def list_projects_json():
+    object = quorum.get_object(alias = True, find = True)
+    projects = models.Project.find(map = True, **object)
+    return flask.Response(
+        quorum.dumps_mongo(projects),
+        mimetype = "application/json"
     )
 
 @app.route("/projects/new", methods = ("GET",))
@@ -131,7 +138,16 @@ def delete_project(name):
     project = models.Project.get(name = name)
     project.delete()
     return flask.redirect(
-        flask.url_for("projects")
+        flask.url_for("list_projects")
+    )
+
+@app.route("/projects/<name>/config", methods = ("GET", "POST"))
+def config_project(name):
+    project = models.Project.get(name = name)
+    config = project.get_config()
+    return flask.Response(
+        config,
+        mimetype = "application/json"
     )
 
 @app.route("/projects/<name>/run")
