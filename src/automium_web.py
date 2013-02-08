@@ -42,8 +42,6 @@ import json
 import time
 import flask
 import atexit
-import shutil
-import zipfile
 import automium
 import datetime
 
@@ -61,6 +59,7 @@ PROJECTS_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "projects")
 
 app = flask.Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["PROJECTS_FOLDER"] = PROJECTS_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 1024 ** 3
 quorum.load(
     app,
@@ -172,8 +171,8 @@ def update_project(name):
 
 @app.route("/projects/<name>/delete", methods = ("GET", "POST"))
 def delete_project(name):
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    if os.path.isdir(project_folder): shutil.rmtree(project_folder)
+    project = models.Project.get(name = name)
+    project.delete()
     return flask.redirect(
         flask.url_for("projects")
     )
@@ -184,7 +183,8 @@ def run_project(name):
     # as the work "callable", note that the schedule flag
     # is not set meaning that no schedule will be done
     # after the execution
-    _run = _get_run(id, schedule = False)
+    project = models.Project.get(name = name)
+    _run = project.get_run(schedule = False)
 
     # inserts a new work task into the execution thread
     # for the current time, this way this task is going
@@ -193,13 +193,13 @@ def run_project(name):
     execution_thread.insert_work(current_time, _run)
 
     return flask.redirect(
-        flask.url_for("show_project", id = id)
+        flask.url_for("show_project", name = name)
     )
 
 @app.route("/projects/<name>/builds")
-def builds(id):
-    project = _get_project(id)
-    builds = _get_builds(id)
+def builds(name):
+    project = models.Project.get(name = name)
+    builds = models.Build.find(project = name)
     return flask.render_template(
         "build_list.html.tpl",
         link = "projects",
@@ -208,10 +208,10 @@ def builds(id):
         builds = builds
     )
 
-@app.route("/projects/<name>/builds/<build_id>", methods = ("GET",))
-def show_build(name, build_id):
-    project = _get_project(id)
-    build = _get_build(id, build_id)
+@app.route("/projects/<name>/builds/<id>", methods = ("GET",))
+def show_build(name, id):
+    project = models.Project.get(name = name)
+    build = models.Build.get(project = name, id = id)
     return flask.render_template(
         "build_show.html.tpl",
         link = "projects",
@@ -220,22 +220,19 @@ def show_build(name, build_id):
         build = build
     )
 
-@app.route("/projects/<name>/builds/<build_id>/delete", methods = ("GET", "POST"))
-def delete_build(mame, build_id):
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    builds_folder = os.path.join(project_folder, "builds")
-    build_folder = os.path.join(builds_folder, build_id)
-    if os.path.isdir(build_folder): shutil.rmtree(build_folder)
+@app.route("/projects/<name>/builds/<id>/delete", methods = ("GET", "POST"))
+def delete_build(name, id):
+    build = models.Build.get(project = name, id = id)
+    build.delete()
     return flask.redirect(
-        flask.url_for("builds", id = id)
+        flask.url_for("builds", name = name)
     )
 
-@app.route("/projects/<name>/builds/<build_id>/log", methods = ("GET",))
-def log_build(name, build_id):
-    project = _get_project(id)
-    build = _get_build(id, build_id)
-    log = _get_build_log(id, build_id)
-    log = log.decode("utf-8")
+@app.route("/projects/<name>/builds/<id>/log", methods = ("GET",))
+def log_build(name, id):
+    project = models.Project.get(name = name)
+    build = models.Build.get(project = name, id = id)
+    log = build.log.decode("utf-8")
     return flask.render_template(
         "build_log.html.tpl",
         link = "projects",
@@ -245,22 +242,24 @@ def log_build(name, build_id):
         log = log
     )
 
-@app.route("/projects/<name>/builds/<build_id>/files/", defaults = {"path" : "" }, methods = ("GET",))
-@app.route("/projects/<name>/builds/<build_id>/files/<path:path>", methods = ("GET",))
-def files_build(name, build_id, path = ""):
-    project = _get_project(id)
-    build = _get_build(id, build_id)
+@app.route("/projects/<name>/builds/<id>/files/", defaults = {"path" : "" }, methods = ("GET",))
+@app.route("/projects/<name>/builds/<id>/files/<path:path>", methods = ("GET",))
+def files_build(name, id, path = ""):
+    project = models.Project.get(name = name)
+    build = models.Build.get(project = name, id = id)
 
-    file_path = _get_file_path(id, build_id, path)
+    file_path = build.get_file_path(path)
     is_directory = os.path.isdir(file_path)
     if not is_directory: return flask.send_file(file_path)
 
     if path and not path.endswith("/"):
         return flask.redirect(
-            flask.url_for("files_build", id = id, build_id = build_id, path = path + "/")
+            flask.url_for(
+                "files_build", name = name, id = id, path = path + "/"
+            )
         )
 
-    files = _get_build_files(id, build_id, path)
+    files = build.get_build_files(path)
     return flask.render_template(
         "build_files.html.tpl",
         link = "projects",
@@ -399,16 +398,6 @@ def _get_about():
     }
     return about
 
-def _touch_atm(id):
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    file_path = os.path.join(project_folder, "build.atm")
-    build_path = os.path.join(project_folder, "_build")
-    if os.path.isdir(build_path): shutil.rmtree(build_path)
-    os.makedirs(build_path)
-
-    zip_file = zipfile.ZipFile(file_path, "r")
-    zip_file.extractall(build_path)
-
 def _get_recursion(project):
     recursion = project.get("recursion", {})
     days = recursion.get("days", 0)
@@ -499,17 +488,6 @@ def _schedule_projects():
     # schedules all of the them in the scheduler task
     projects = _get_projects()
     for project in projects: _schedule_project(project)
-
-def _validate_project():
-    return [
-        quorum.not_null("name"),
-        quorum.not_empty("name"),
-
-        quorum.not_null("description"),
-        quorum.not_empty("description"),
-
-        quorum.not_null("build_file")
-    ]
 
 def run():
     # sets the debug control in the application
