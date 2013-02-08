@@ -6,10 +6,10 @@
         {% for build in builds %}
             <li>
                 <div class="name">
-                    <a href="{{ url_for('show_build', id = project.id, build_id = build.id) }}"># {{ build.id }}</a>
+                    <a href="{{ url_for('show_build', name = project.name, id = build.id) }}"># {{ build.id }}</a>
                 </div>
                 <div class="description">
-                    <span class="{{ build._result }}">{{ build._result }}</span> on {{ build._start_time }}
+                    <span class="{{ build.result_l }}">{{ build.result_l }}</span> on {{ build.start_time_l }}
                 </div>
             </li>
         {% endfor %}

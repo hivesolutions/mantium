@@ -5,7 +5,7 @@
     <ul>
         {% for file in files %}
             <li>
-                <a href="{{ url_for('files_build', id = project.id, build_id = build.id, path = path + file) }}">{{ file }}</a>
+                <a href="{{ url_for('files_build', name = project.name, id = build.id, path = path + file) }}">{{ file }}</a>
             </li>
         {% endfor %}
     </ul>

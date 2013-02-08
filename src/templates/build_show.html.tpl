@@ -6,19 +6,19 @@
         <tbody>
             <tr>
                 <td class="right label" width="50%">result</td>
-                <td class="left value {{ build._result }}" width="50%">{{ build._result }}</td>
+                <td class="left value {{ build.result_l }}" width="50%">{{ build.result_l }}</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">start time</td>
-                <td class="left value" width="50%">{{ build._start_time }}</td>
+                <td class="left value" width="50%">{{ build.start_time_l }}</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">end time</td>
-                <td class="left value" width="50%">{{ build._end_time }}</td>
+                <td class="left value" width="50%">{{ build.end_time_l }}</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">duration</td>
-                <td class="left value" width="50%">{{ build._delta }}</td>
+                <td class="left value" width="50%">{{ build.delta_l }}</td>
             </tr>
             <tr>
                 <td class="right label" width="50%">size</td>
