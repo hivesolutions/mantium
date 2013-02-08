@@ -132,6 +132,7 @@ setuptools.setup(
     packages = [
         "models",
         "views",
+        "views.web",
         "quorum"
     ],
     scripts = [
