@@ -24,7 +24,7 @@
             </tr>
             <tr>
                 <td class="right label" width="50%">build file</td>
-                <td class="left value" width="50%"><a href="#">build.json</a></td>
+                <td class="left value" width="50%"><a href="{{ url_for('config_project', name = project.name) }}">build.json</a></td>
             </tr>
         </tbody>
     </table>
