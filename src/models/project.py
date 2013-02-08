@@ -124,9 +124,9 @@ class Project(base.Base):
         ]
 
     @classmethod
-    def schedule_all(cls, execution):
+    def schedule_all(cls):
         projects = cls.find()
-        for project in projects: project.schedule(execution)
+        for project in projects: project.schedule()
 
     @classmethod
     def _build(cls, model, map):
@@ -180,7 +180,7 @@ class Project(base.Base):
 
         self._delete_folder()
 
-    def schedule(self, execution):
+    def schedule(self):
         # retrieves the various required project attributes
         # for the scheduling process they are going to be used
         # in the scheduling process
@@ -192,7 +192,7 @@ class Project(base.Base):
     
         # inserts a new work task into the execution (thread)
         # for the next (target time)
-        execution.insert_work(next_time, _run)
+        quorum.insert_work(next_time, _run)
 
     def get_folder(self):
         # retrieves the reference to the configuration value
