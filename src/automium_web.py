@@ -197,7 +197,7 @@ def run_project(name):
 @app.route("/projects/<name>/builds")
 def builds(name):
     project = models.Project.get(name = name)
-    builds = models.Build.find(project = name)
+    builds = models.Build.find(sort = [("id", -1)], project = name)
     return flask.render_template(
         "build_list.html.tpl",
         link = "projects",
