@@ -51,7 +51,7 @@ class Build(base.Base):
     id = dict(
         index = True
     )
-    
+
     project = dict(
         index = True
     )
@@ -108,7 +108,7 @@ class Build(base.Base):
 
     def post_apply(self):
         base.Base.post_apply(self)
-        
+
     def get_folder(self):
         # retrieves the reference to the configuration value
         # containing the path the projects directory and uses
@@ -117,11 +117,11 @@ class Build(base.Base):
         project_folder = os.path.join(projects_folder, self.project)
         build_folder = os.path.join(project_folder, "builds", self.id)
         return build_folder
-    
+
     def get_file_path(self, path):
         build_folder = self.get_folder()
         return os.path.join(build_folder, path)
-    
+
     def get_files(self, path):
         path_f = self.get_file_path(path)
         entries = os.listdir(path_f)
@@ -134,8 +134,8 @@ class Build(base.Base):
         log_path = os.path.join(log_folder, "automium.log")
         log_file = open(log_path, "rb")
         try: log = log_file.read()
-        finally: log_file.close() 
-        return log        
+        finally: log_file.close()
+        return log
 
     def _delete_folder(self):
         build_folder = self.get_folder()

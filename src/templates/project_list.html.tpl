@@ -2,8 +2,8 @@
 {% block title %}Projects{% endblock %}
 {% block name %}Projects{% endblock %}
 {% block content %}
-	<ul class="filter" data-no_input="1">
-    	<div class="data-source" data-url="{{ url_for('list_projects_json') }}" data-type="json" data-timeout="0"></div>
+    <ul class="filter" data-no_input="1">
+        <div class="data-source" data-url="{{ url_for('list_projects_json') }}" data-type="json" data-timeout="0"></div>
         <li class="template">
             <div class="name">
                 <a href="{{ url_for('show_project', name = '') }}%[name]">%[name]</a>

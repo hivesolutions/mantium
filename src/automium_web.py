@@ -119,9 +119,9 @@ def run():
     # then checks the current environment variable
     # for the target port for execution (external)
     # and then start running it (continuous loop)
-    debug = os.environ.get("DEBUG", False) and True or False
-    reloader = os.environ.get("RELOADER", False) and True or False
-    port = int(os.environ.get("PORT", 5000))
+    debug = quorum.conf("DEBUG", False) and True or False
+    reloader = quorum.conf("RELOADER", False) and True or False
+    port = int(quorum.conf("PORT", 5000))
     app.debug = debug
     app.run(
         use_debugger = debug,

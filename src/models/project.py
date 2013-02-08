@@ -160,7 +160,7 @@ class Project(base.Base):
 
     def post_create(self):
         base.Base.post_create(self)
-        
+
         # runs the initial schedule operation on the project so
         # that it starts the first build process
         self.schedule()
@@ -193,11 +193,11 @@ class Project(base.Base):
         # for the scheduling process they are going to be used
         # in the scheduling process
         next_time = self.next_time or time.time()
-    
+
         # retrieves the "custom" run function to be used as the
         # work for the scheduler
         _run = self.get_run(schedule = True)
-    
+
         # inserts a new work task into the execution (thread)
         # for the next (target time)
         quorum.insert_work(next_time, _run)
@@ -291,7 +291,7 @@ class Project(base.Base):
         # returns the "custom" run function that contains a
         # transitive closure on the project identifier
         return _run
-    
+
     def get_config(self):
         project_folder = self.get_folder()
         build_path = os.path.join(project_folder, "_build")
