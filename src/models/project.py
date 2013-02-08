@@ -146,8 +146,8 @@ class Project(base.Base):
 
         # sets the initial value for the build count so that it
         # starts with the zero value (no builds)
-        self.status = None
         self.result = None
+        self.build_time = 0.0
         self.builds = 0
 
         # retrieves the current time value and the recursion value for
