@@ -38,12 +38,10 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
-import json
 import time
 import flask
 import atexit
 import automium
-import datetime
 
 import models
 import quorum
@@ -232,7 +230,8 @@ def delete_build(name, id):
 def log_build(name, id):
     project = models.Project.get(name = name)
     build = models.Build.get(project = name, id = id)
-    log = build.log.decode("utf-8")
+    log = build.get_log()
+    log = log.decode("utf-8")
     return flask.render_template(
         "build_log.html.tpl",
         link = "projects",
@@ -259,7 +258,7 @@ def files_build(name, id, path = ""):
             )
         )
 
-    files = build.get_build_files(path)
+    files = build.get_files(path)
     return flask.render_template(
         "build_files.html.tpl",
         link = "projects",
@@ -289,106 +288,15 @@ def handler_413(error):
 
 @app.errorhandler(BaseException)
 def handler_exception(error):
+    import traceback
+    import sys
+
+    print "Exception in user code:"
+    print '-' * 60
+    traceback.print_exc(file = sys.stdout)
+    print '-' * 60
+
     return str(error)
-
-def _get_projects():
-    projects = []
-    ids = os.listdir(PROJECTS_FOLDER)
-    for id in ids:
-        path = os.path.join(PROJECTS_FOLDER, id)
-        if not os.path.isdir(path): continue
-        project = _get_project(id)
-        projects.append(project)
-    return projects
-
-def _get_builds(id):
-    builds = []
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    builds_folder = os.path.join(project_folder, "builds")
-    build_ids = os.listdir(builds_folder)
-    for build_id in build_ids:
-        path = os.path.join(builds_folder, build_id)
-        if not os.path.isdir(path): continue
-        build = _get_build(id, build_id)
-        builds.append(build)
-    return builds
-
-def _get_project(id):
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    project_path = os.path.join(project_folder, "description.json")
-    project_file = open(project_path, "rb")
-    try: project = json.load(project_file)
-    finally: project_file.close()
-
-    next_time = datetime.datetime.fromtimestamp(project["next_time"])
-    project["_next_time"] = next_time.strftime("%b %d, %Y %H:%M:%S")
-
-    return project
-
-def _set_project(id, project):
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    project_path = os.path.join(project_folder, "description.json")
-    project_file = open(project_path, "wb")
-    try: json.dump(project, project_file)
-    finally: project_file.close()
-
-def _get_build(id, build_id):
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    builds_folder = os.path.join(project_folder, "builds")
-    build_folder = os.path.join(builds_folder, build_id)
-    build_path = os.path.join(build_folder, "description.json")
-    build_file = open(build_path, "rb")
-    try: build = json.load(build_file)
-    finally: build_file.close()
-
-    result = build["result"]
-    delta = build["delta"]
-    start_time = datetime.datetime.fromtimestamp(build["start_time"])
-    end_time = datetime.datetime.fromtimestamp(build["end_time"])
-    build["_result"] = result and "passed" or "failed"
-    build["_delta"] = automium.delta_string(delta)
-    build["_start_time"] = start_time.strftime("%b %d, %Y %H:%M:%S")
-    build["_end_time"] = end_time.strftime("%b %d, %Y %H:%M:%S")
-
-    return build
-
-def _get_latest_build(id):
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    builds_folder = os.path.join(project_folder, "builds")
-    build_ids = os.listdir(builds_folder)
-    if not build_ids: return None
-    build_ids.sort(reverse = True)
-    build_id = build_ids[0]
-    return _get_build(id, build_id)
-
-def _get_build_log(id, build_id):
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    builds_folder = os.path.join(project_folder, "builds")
-    build_folder = os.path.join(builds_folder, build_id)
-    log_path = os.path.join(build_folder, "log/automium.log")
-    log_file = open(log_path, "rb")
-    try: log = log_file.read()
-    finally: log_file.close()
-
-    return log
-
-def _get_build_files(id, build_id, path = ""):
-    path = path.strip("/")
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    builds_folder = os.path.join(project_folder, "builds")
-    build_folder = os.path.join(builds_folder, build_id)
-    full_path = os.path.join(build_folder, path)
-    entries = os.listdir(full_path)
-    path and entries.insert(0, "..")
-    return entries
-
-def _get_file_path(id, build_id, path):
-    path = path.strip("/")
-    project_folder = os.path.join(PROJECTS_FOLDER, id)
-    builds_folder = os.path.join(project_folder, "builds")
-    build_folder = os.path.join(builds_folder, build_id)
-    full_path = os.path.join(build_folder, path)
-    return full_path
 
 def _get_about():
     current_time = int(time.time())
@@ -397,97 +305,6 @@ def _get_about():
         "system" : automium.resolve_os()
     }
     return about
-
-def _get_recursion(project):
-    recursion = project.get("recursion", {})
-    days = recursion.get("days", 0)
-    hours = recursion.get("hours", 0)
-    minutes = recursion.get("minutes", 0)
-    seconds = recursion.get("seconds", 0)
-
-    return days * 86400\
-        + hours * 3600\
-        + minutes * 60\
-        + seconds
-
-def _get_run(id, schedule = False):
-    def _run():
-        # retrieves the current time as the initial time
-        # for the build automation execution
-        initial_time = time.time()
-
-        # "calculates" the build file path using the projects
-        # folder as the base path for such calculus
-        project_folder = os.path.join(PROJECTS_FOLDER, id)
-        build_path = os.path.join(project_folder, "_build")
-        _build_path = os.path.join(build_path, "build.json")
-
-        # opens the build file descriptor and parses using
-        # the json parser then closes the file
-        build_file = open(_build_path, "rb")
-        try: configuration = json.load(build_file)
-        finally: build_file.close()
-
-        # executes the automium task using the the build path
-        # and the configuration map as parameters, then sets
-        # the current (execution) path as the project folder
-        # so that the resulting files are placed there
-        automium.run(build_path, configuration, current = project_folder)
-
-        # retrieves the current associated project and build
-        # and uses them to update the project structure with
-        # the new value (then flushes the project contents)
-        project = _get_project(id)
-        build = _get_latest_build(id)
-        project["result"] = build["result"]
-        project["_result"] = build["_result"]
-        project["build_time"] = build.get("delta", 0)
-        project["_build_time"] = build.get("_delta", "0 seconds")
-        project["builds"] = project.get("builds", 0) + 1
-        _set_project(id, project)
-
-        # in case schedule flag is not set, no need to
-        # recalculate the new "next time" and put the
-        # the new work into the scheduler, returns now
-        if not schedule: return
-
-        # retrieves the recursion integer value and uses
-        # it to recalculate the next time value setting
-        # then the value in the project value
-        recursion = _get_recursion(project)
-        next_time = initial_time + recursion
-        project["next_time"] = next_time
-
-        # re-saves the project because the next time value
-        # has changed (flushes contents) then schedules the
-        # project putting the work into the scheduler
-        _set_project(id, project)
-        _schedule_project(project)
-
-    # returns the "custom" run function that contains a
-    # transitive closure on the project identifier
-    return _run
-
-def _schedule_project(project):
-    # retrieves the various required project attributes
-    # for the scheduling process they are going to be used
-    # in the scheduling process
-    id = project["id"]
-    next_time = project.get("next_time", time.time())
-
-    # retrieves the "custom" run function to be used as the
-    # work for the scheduler
-    _run = _get_run(id, schedule = True)
-
-    # inserts a new work task into the execution thread
-    # for the next (target time)
-    execution_thread.insert_work(next_time, _run)
-
-def _schedule_projects():
-    # retrieves all the currently available project and
-    # schedules all of the them in the scheduler task
-    projects = _get_projects()
-    for project in projects: _schedule_project(project)
 
 def run():
     # sets the debug control in the application
@@ -524,7 +341,7 @@ execution_thread.start()
 
 # schedules the various projects currently registered in
 # the system internal structures
-_schedule_projects()
+models.Project.schedule_all(execution_thread)
 
 if __name__ == "__main__":
     run()
