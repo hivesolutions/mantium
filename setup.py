@@ -124,10 +124,10 @@ setuptools.setup(
     version = "0.1.2",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
-    description = "Automium System Web Interface",
+    description = "Mantium Web Interface",
     license = "GNU General Public License (GPL), Version 3",
-    keywords = "automium build automation",
-    url = "http://automium.com",
+    keywords = "mantium build automation",
+    url = "http://mantium.com",
     zip_safe = False,
     packages = [
         "models",

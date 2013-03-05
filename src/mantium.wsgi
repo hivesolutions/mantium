@@ -1,1 +1,1 @@
-from automium_web import app as application
+from mantium import app as application

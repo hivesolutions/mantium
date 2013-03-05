@@ -27,7 +27,7 @@
 @echo off
 
 :: sets the temporary variables
-set SCRIPT_NAME=automium_web_pypi.py
+set SCRIPT_NAME=mantium_pypi.py
 
 :: executes the initial python script with
 :: the provided arguments
