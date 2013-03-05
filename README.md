@@ -20,7 +20,7 @@ the **viriatum.ini** configuration file.
 [location:mantium]
 path = /mantium
 handler = wsgi
-script_path = /usr/local/lib/python2.7/dist-packages/mantium-$VERSION-py2.7.egg/mantium.wsgi
+script_path = /usr/local/lib/python$PY_VERSION/dist-packages/mantium-$VERSION-py$PY_VERSION.egg/mantium.wsgi
 ```
 
 ## Inspiration
