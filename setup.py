@@ -1,23 +1,23 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Hive Automium System
+# Hive Mantium System
 # Copyright (C) 2008-2012 Hive Solutions Lda.
 #
-# This file is part of Hive Automium System.
+# This file is part of Hive Mantium System.
 #
-# Hive Automium System is free software: you can redistribute it and/or modify
+# Hive Mantium System is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Hive Automium System is distributed in the hope that it will be useful,
+# Hive Mantium System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Hive Automium System. If not, see <http://www.gnu.org/licenses/>.
+# along with Hive Mantium System. If not, see <http://www.gnu.org/licenses/>.
 
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
@@ -105,7 +105,7 @@ def find_data_files(source_path, target_path, patterns):
 # finds the various static and template data files to be
 # included in the package (this is required for non python
 # files by the setuptools)
-base_data_files = find_data_files("src", "", ["automium_web.wsgi"])
+base_data_files = find_data_files("src", "", ["mantium.wsgi"])
 projects_data_files = find_data_files("src/projects", "projects", ["README.md"])
 static_data_files = find_data_files("src/static", "static", ["css/*", "images/*", "js/*", "libs/*/*/*"])
 templates_data_files = find_data_files("src/templates", "templates", ["*", "partials/*"])
@@ -120,7 +120,7 @@ root_directory = os.path.dirname(__file__)
 if not root_directory == "": os.chdir(root_directory)
 
 setuptools.setup(
-    name = "automium_web",
+    name = "mantium",
     version = "0.1.2",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
@@ -136,11 +136,11 @@ setuptools.setup(
         "quorum"
     ],
     scripts = [
-        "scripts/pypi/automium_web.bat",
-        "scripts/pypi/automium_web_pypi.py"
+        "scripts/pypi/mantium.bat",
+        "scripts/pypi/mantium_pypi.py"
     ],
     py_modules = [
-        "automium_web"
+        "mantium"
     ],
     package_dir = {
         "" : os.path.normpath("src")
