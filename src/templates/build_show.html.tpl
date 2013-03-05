@@ -28,6 +28,10 @@
                 <td class="right label" width="50%">system</td>
                 <td class="left value" width="50%">{{ build.system }}</td>
             </tr>
+            <tr>
+                <td class="right label" width="50%">file</td>
+                <td class="left value" width="50%">description.json</td>
+            </tr>
         </tbody>
     </table>
 {% endblock %}
