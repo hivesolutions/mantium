@@ -277,7 +277,8 @@ class Project(base.Base):
                 build_path,
                 configuration,
                 options = options,
-                current = project_folder
+                current = project_folder,
+                file_c = _build_path
             )
 
             # retrieves the currently associated project, must updated
