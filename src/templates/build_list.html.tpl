@@ -15,9 +15,9 @@
         <div class="filter-no-results quote">
             No results found
         </div>
-	    <div class="filter-more">
-	        <span class="button more">Load more</span>
-	        <span class="button load">Loading</span>
-	    </div>
+        <div class="filter-more">
+            <span class="button more">Load more</span>
+            <span class="button load">Loading</span>
+        </div>
     </ul>
 {% endblock %}
