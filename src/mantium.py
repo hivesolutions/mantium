@@ -54,11 +54,10 @@ CURRENT_DIRECTORY_ABS = os.path.abspath(CURRENT_DIRECTORY)
 UPLOAD_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "uploads")
 PROJECTS_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "projects")
 
-app = flask.Flask(__name__)
-quorum.load(
-    app,
+app = quorum.load(
+    name = __name__,
     mongo_database = MONGO_DATABASE,
-    name = "mantium.debug",
+    logger = "mantium.debug",
     models = models,
     UPLOAD_FOLDER = UPLOAD_FOLDER,
     MAX_CONTENT_LENGTH = 1024 ** 3
