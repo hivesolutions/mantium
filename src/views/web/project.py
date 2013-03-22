@@ -159,11 +159,9 @@ def run_project(name):
     project = models.Project.get(name = name)
     _run = project.get_run(schedule = False)
 
-    # inserts a new work task into the execution thread
-    # for the current time, this way this task is going
-    # to be executed immediately
-    current_time = time.time()
-    quorum.insert_work(current_time, _run)
+    # starts the running of the run method in a background
+    # fashion (another thread) so that no blocking occurs
+    quorum.run_back(_run)
 
     return flask.redirect(
         flask.url_for("show_project", name = name)
