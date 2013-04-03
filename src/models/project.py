@@ -200,7 +200,7 @@ class Project(base.Base):
 
         # inserts a new work task into the execution (thread)
         # for the next (target time)
-        quorum.run_back(_run, next_time)
+        quorum.run_back(_run, target_time = next_time)
 
     def get_folder(self):
         # retrieves the reference to the configuration value
