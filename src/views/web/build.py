@@ -55,14 +55,11 @@ def list_builds(name):
         project = project
     )
 
-@app.route("/projects/<name>/builds.json", methods = ("GET",))
+@app.route("/projects/<name>/builds.json", methods = ("GET",), json = True)
 def list_builds_json(name):
     object = quorum.get_object(alias = True, find = True)
     builds = models.Build.find(map = True, sort = [("id", -1)], project = name, **object)
-    return flask.Response(
-        quorum.dumps_mongo(builds),
-        mimetype = "application/json"
-    )
+    return builds
 
 @app.route("/projects/<name>/builds/<id>", methods = ("GET",))
 def show_build(name, id):

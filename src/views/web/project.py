@@ -37,8 +37,6 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import time
-
 import models
 
 from mantium import app
@@ -52,14 +50,11 @@ def list_projects():
         link = "projects"
     )
 
-@app.route("/projects.json", methods = ("GET",))
+@app.route("/projects.json", methods = ("GET",), json = True)
 def list_projects_json():
     object = quorum.get_object(alias = True, find = True)
     projects = models.Project.find(map = True, **object)
-    return flask.Response(
-        quorum.dumps_mongo(projects),
-        mimetype = "application/json"
-    )
+    return projects
 
 @app.route("/projects/new", methods = ("GET",))
 def new_project():
