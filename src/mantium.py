@@ -38,9 +38,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
-import time
-import flask
-import automium
+
+import flask #@UnusedImport
 
 import models
 import quorum
@@ -63,55 +62,6 @@ app = quorum.load(
     MAX_CONTENT_LENGTH = 1024 ** 3
 )
 quorum.confs("PROJECTS_FOLDER", PROJECTS_FOLDER)
-
-start_time = int(time.time())
-
-@app.route("/")
-@app.route("/index")
-def index():
-    return flask.render_template(
-        "index.html.tpl",
-        link = "home"
-    )
-
-@app.route("/login", methods = ("GET",))
-def login():
-    return flask.render_template(
-        "login.html.tpl"
-    )
-
-@app.route("/login", methods = ("POST",))
-def do_login():
-    return flask.request.form["username"]
-
-@app.route("/about")
-def about():
-    about = _get_about()
-    return flask.render_template(
-        "about.html.tpl",
-        link = "about",
-        about = about
-    )
-
-@app.errorhandler(404)
-def handler_404(error):
-    return str(error)
-
-@app.errorhandler(413)
-def handler_413(error):
-    return str(error)
-
-@app.errorhandler(BaseException)
-def handler_exception(error):
-    return str(error)
-
-def _get_about():
-    current_time = int(time.time())
-    about = {
-        "uptime" : automium.delta_string(current_time - start_time),
-        "system" : automium.resolve_os()
-    }
-    return about
 
 from views import *  #@UnusedWildImport
 
