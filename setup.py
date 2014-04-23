@@ -133,7 +133,6 @@ setuptools.setup(
         "models",
         "views",
         "views.web",
-        "quorum"
     ],
     scripts = [
         "scripts/pypi/mantium.bat",
@@ -148,7 +147,8 @@ setuptools.setup(
     data_files = data_files,
     install_requires = [
         "automium",
-        "flask"
+        "flask",
+        "quorum"
     ],
     classifiers = [
         "Development Status :: 3 - Alpha",
