@@ -3,6 +3,8 @@
 	<name>mantium</name>
 	<comment></comment>
 	<projects>
+		<project>automium</project>
+		<project>quorum</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
