@@ -1,6 +1,0 @@
-[submodule "src/static/libs/uxf"]
-	path = src/static/libs/uxf
-	url = git@github.com:hivesolutions/uxf_bin.git
-[submodule "src/static/libs/layout"]
-	path = src/static/libs/layout
-	url = git@github.com:hivesolutions/layout.git
