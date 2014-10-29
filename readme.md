@@ -7,7 +7,7 @@ both the specification (build.json) file and the scripts to be run.
 
 ## Installation
 
-* `easy_install mantium`
+    pip install mantium
 
 ## Configuration
 
