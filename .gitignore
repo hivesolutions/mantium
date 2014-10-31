@@ -1,4 +1,7 @@
 *.pyc
 *.debug
 
+/dist
+/build
+/src/mantium.egg-info
 /src/mantium/projects/*/*
