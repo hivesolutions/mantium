@@ -19,9 +19,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Mantium System. If not, see <http://www.gnu.org/licenses/>.
 
-__author__ = "João Magalhães <joamag@hive.pt>"
-""" The author(s) of the module """
-
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -37,37 +34,10 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import os
+from . import models
+from . import views
+from . import main
 
-import flask #@UnusedImport
-
-import models
-import quorum
-
-MONGO_DATABASE = "automium"
-""" The default database to be used for the connection with
-the mongo database """
-
-CURRENT_DIRECTORY = os.path.dirname(__file__)
-CURRENT_DIRECTORY_ABS = os.path.abspath(CURRENT_DIRECTORY)
-UPLOAD_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "uploads")
-PROJECTS_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "projects")
-
-app = quorum.load(
-    name = __name__,
-    mongo_database = MONGO_DATABASE,
-    logger = "mantium.debug",
-    models = models,
-    UPLOAD_FOLDER = UPLOAD_FOLDER,
-    MAX_CONTENT_LENGTH = 1024 ** 3
-)
-quorum.confs("PROJECTS_FOLDER", PROJECTS_FOLDER)
-
-from views import *  #@UnusedWildImport
-
-# schedules the various projects currently registered in
-# the system internal structures
-models.Project.schedule_all()
-
-if __name__ == "__main__":
-    quorum.run(server = "netius")
+from .models import *
+from .views import *
+from .main import app

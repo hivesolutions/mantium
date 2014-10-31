@@ -36,8 +36,10 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 from . import base
 from . import build
+from . import log
 from . import project
 
-from .base import *
-from .build import *
-from .project import *
+from .base import Base
+from .build import Build
+from .log import Log
+from .project import Project

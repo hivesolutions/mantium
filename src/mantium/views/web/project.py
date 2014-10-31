@@ -37,11 +37,11 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import models
+from mantium import models
 
-from mantium import app
-from mantium import flask
-from mantium import quorum
+from mantium.main import app
+from mantium.main import flask
+from mantium.main import quorum
 
 @app.route("/projects", methods = ("GET",))
 def list_projects():
@@ -72,7 +72,7 @@ def create_project():
     # should be ran upon the save operation
     project = models.Project.new()
     try: project.save()
-    except quorum.ValidationError, error:
+    except quorum.ValidationError as error:
         return flask.render_template(
             "project_new.html.tpl",
             link = "new project",
@@ -113,7 +113,7 @@ def update_project(name):
     project = models.Project.get(name = name)
     project.apply()
     try: project.save()
-    except quorum.ValidationError, error:
+    except quorum.ValidationError as error:
         return flask.render_template(
             "project_edit.html.tpl",
             link = "projects",

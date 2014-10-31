@@ -37,7 +37,38 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import base
+import os
 
-class Log(base.Base):
-    pass
+import flask #@UnusedImport
+
+import quorum
+
+import mantium.models
+
+MONGO_DATABASE = "automium"
+""" The default database to be used for the connection with
+the mongo database """
+
+CURRENT_DIRECTORY = os.path.dirname(__file__)
+CURRENT_DIRECTORY_ABS = os.path.abspath(CURRENT_DIRECTORY)
+UPLOAD_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "uploads")
+PROJECTS_FOLDER = os.path.join(CURRENT_DIRECTORY_ABS, "projects")
+
+app = quorum.load(
+    name = __name__,
+    mongo_database = MONGO_DATABASE,
+    logger = "mantium.debug",
+    models = mantium.models,
+    UPLOAD_FOLDER = UPLOAD_FOLDER,
+    MAX_CONTENT_LENGTH = 1024 ** 3
+)
+quorum.confs("PROJECTS_FOLDER", PROJECTS_FOLDER)
+
+import mantium.views #@UnusedImport
+
+# schedules the various projects currently registered in
+# the system internal structures
+mantium.models.Project.schedule_all()
+
+if __name__ == "__main__":
+    quorum.run(server = "netius")

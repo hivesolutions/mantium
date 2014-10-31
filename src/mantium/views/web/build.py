@@ -39,11 +39,11 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import os
 
-import models
+from mantium import models
 
-from mantium import app
-from mantium import flask
-from mantium import quorum
+from mantium.main import app
+from mantium.main import flask
+from mantium.main import quorum
 
 @app.route("/projects/<name>/builds", methods = ("GET",))
 def list_builds(name):

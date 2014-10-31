@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Mantium System. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães <joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,10 +37,7 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-from . import build
-from . import log
-from . import project
+from mantium.models import base
 
-from .build import *
-from .log import *
-from .project import *
+class Log(base.Base):
+    pass
