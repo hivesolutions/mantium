@@ -1,4 +1,4 @@
 *.pyc
 *.debug
 
-/src/projects/*/*
+/src/mantium/projects/*/*
