@@ -1,4 +1,7 @@
 include src/mantium.wsgi
-include src/projects/README.md
-recursive-include src/static *
-recursive-include src/templates *
+include src/mantium/projects/readme.md
+recursive-include src/mantium/static/css *
+recursive-include src/mantium/static/images *
+recursive-include src/mantium/static/js *
+recursive-include src/mantium/templates *.tpl
+recursive-include src/mantium/templates/partials *.tpl

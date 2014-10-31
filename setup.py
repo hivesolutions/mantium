@@ -130,6 +130,12 @@ setuptools.setup(
     url = "http://mantium.com",
     zip_safe = False,
     packages = [
+        "mantium",
+        "mantium.models",
+        "mantium.views",
+        "mantium.views.web"
+    ],
+    packages = [
         "models",
         "views",
         "views.web",
@@ -150,6 +156,21 @@ setuptools.setup(
         "flask",
         "quorum"
     ],
+    package_data = {
+        "mantium" : [
+            "projects/readme.md",
+            "static/css/*",
+            "static/images/*",
+            "static/js/*",
+            "templates/*.tpl",
+            "templates/partials/*.tpl"
+        ]
+    },
+    entry_points = {
+        "console_scripts" : [
+            "mantium = mantium.run:main"
+        ]
+    },
     classifiers = [
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
