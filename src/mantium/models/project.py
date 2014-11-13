@@ -47,8 +47,8 @@ import automium
 
 import quorum
 
-from mantium.models import base
-from mantium.models import build
+from . import base
+from . import build
 
 class Project(base.Base):
 
