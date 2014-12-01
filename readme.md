@@ -1,6 +1,6 @@
 # Mantium Web Interface
 
-The web interface for the [automation](https://github.com/hivesolutions/automium) build system.  
+The web interface for the [automation](https://github.com/hivesolutions/automium) build system.
 Should be able to control a set of automium projects displaying the results of build runs.
 The mantium system uses the atm file specification that defines a zip file containing
 both the specification (build.json) file and the scripts to be run.
