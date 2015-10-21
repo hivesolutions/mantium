@@ -96,7 +96,7 @@ def log_build(name, id):
         log = log
     )
 
-@app.route("/projects/<name>/builds/<id>/files/", defaults = {"path" : "" }, methods = ("GET",))
+@app.route("/projects/<name>/builds/<id>/files/", defaults = {"path" : ""}, methods = ("GET",))
 @app.route("/projects/<name>/builds/<id>/files/<path:path>", methods = ("GET",))
 def files_build(name, id, path = ""):
     project = models.Project.get(name = name)
