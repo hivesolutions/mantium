@@ -131,7 +131,7 @@ class Project(base.Base):
 
     @classmethod
     def _build(cls, model, map):
-        base.Base._build(model, map)
+        super(Project, cls)._build(model, map)
         next_time = model.get("next_time", 0.0)
         next_time_d = datetime.datetime.fromtimestamp(next_time)
         model["next_time_l"] = next_time_d.strftime("%b %d, %Y %H:%M:%S")

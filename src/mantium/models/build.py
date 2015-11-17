@@ -89,7 +89,7 @@ class Build(base.Base):
 
     @classmethod
     def _build(cls, model, map):
-        base.Base._build(model, map)
+        super(Build, cls)._build(model, map)
         result = model.get("result", False)
         delta = model.get("delta", 0)
         start_time = model.get("start_time", 0.0)
