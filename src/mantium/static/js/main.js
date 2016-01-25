@@ -27,20 +27,20 @@
     jQuery.fn.uapply = function(options) {
         var matchedObject = this;
         jQuery("ul li", matchedObject).dblclick(function() {
-                    var element = jQuery(this);
-                    var link = jQuery("a", element);
-                    var linkValue = link.attr("href");
-                    if (!linkValue) {
-                        return;
-                    }
-                    document.location = linkValue;
-                });
+            var element = jQuery(this);
+            var link = jQuery("a", element);
+            var linkValue = link.attr("href");
+            if (!linkValue) {
+                return;
+            }
+            document.location = linkValue;
+        });
     };
 })(jQuery);
 
 jQuery(document).ready(function() {
-            var _body = jQuery("body");
-            _body.bind("applied", function(event, base) {
-                        base.uapply();
-                    });
-        });
+    var _body = jQuery("body");
+    _body.bind("applied", function(event, base) {
+        base.uapply();
+    });
+});
