@@ -80,7 +80,7 @@ def handler_404(error):
 def handler_413(error):
     return str(error)
 
-@app.errorhandler(BaseException)
+@app.errorhandler(Exception)
 def handler_exception(error):
     return str(error)
 
