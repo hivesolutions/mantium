@@ -1,5 +1,5 @@
 include src/mantium.wsgi
-include src/mantium/projects/readme.md
+include src/mantium/projects/README.md
 recursive-include src/mantium/static/css *
 recursive-include src/mantium/static/images *
 recursive-include src/mantium/static/js *

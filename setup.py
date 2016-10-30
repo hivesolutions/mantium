@@ -66,7 +66,7 @@ setuptools.setup(
     ],
     package_data = {
         "mantium" : [
-            "projects/readme.md",
+            "projects/README.md",
             "static/css/*",
             "static/images/*",
             "static/js/*",
