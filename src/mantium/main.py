@@ -72,3 +72,5 @@ mantium.models.Project.schedule_all()
 
 if __name__ == "__main__":
     quorum.run(server = "netius")
+else:
+    __path__ = []
