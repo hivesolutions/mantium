@@ -29,8 +29,9 @@
         <div class="label">
             <label>Build File</label>
         </div>
-        <div class="input">
-             <a data-name="build_file" class="uploader" data-error="{{ errors.build_file }}">Select & Upload the build file</a>
+        <div class="input single">
+             <a data-name="build_file" class="uploader"
+                data-error="{{ errors.build_file }}">Select & Upload the build file</a>
         </div>
         <div class="quote">
             By clicking Submit Project, you agree to our Service Agreement and that you have

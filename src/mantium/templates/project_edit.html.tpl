@@ -30,7 +30,7 @@
         <div class="label">
             <label>Build File</label>
         </div>
-        <div class="input">
+        <div class="input single">
              <a data-name="build_file" class="uploader" data-error="{{ errors.build_file }}">Select & Upload the build file</a>
         </div>
         <span class="button" data-link="{{ url_for('show_project', name = project.name) }}">Cancel</span>
