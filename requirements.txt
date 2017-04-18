@@ -3,3 +3,4 @@ flask
 quorum
 pymongo
 redis
+automium
