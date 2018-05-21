@@ -368,7 +368,7 @@ class Project(base.Base):
 
         # extracts all the files contained in the automium file
         # into the "just" created directory (deployment operation)
-        zip_file = zipfile.ZipFile(file_path, "r")
+        zip_file = zipfile.ZipFile(file_path, mode = "r")
         zip_file.extractall(build_path)
 
     def _get_recursion(self):
