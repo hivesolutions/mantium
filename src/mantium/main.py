@@ -47,7 +47,7 @@ import mantium.models
 
 MONGO_DATABASE = "automium"
 """ The default database to be used for the connection with
-the mongo database """
+the MongoDB database """
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
 CURRENT_DIRECTORY_ABS = os.path.abspath(CURRENT_DIRECTORY)
