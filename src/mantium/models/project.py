@@ -252,7 +252,7 @@ class Project(base.Base):
             _build_path = os.path.join(build_path, "build.json")
 
             # opens the build file descriptor and parses using
-            # the json parser then closes the file
+            # the JSON parser then closes the file
             build_file = open(_build_path, "rb")
             try: configuration = json.load(build_file)
             finally: build_file.close()
